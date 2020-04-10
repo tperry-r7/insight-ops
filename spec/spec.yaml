@@ -2937,8 +2937,14 @@ tags:
   - name: Query
     description: 'The Query API lets you perform LEQL queries through an API interface in the same manner that you would in the UI. Via the API you can construct LEQL queries to return you search results which give you log data, or perform functions which return metrics using our `groupb`y and `calculate` options.'
   - name: Tags
+    description: 'The Tags resource allows you to interact with Tags in your account.'
   - name: Labels
+    description: 'The Labels resource allows you to interact with labels for tags & alerts in your account.'
   - name: Logs
+    description: 'The Logs resource allows you to interact with Logs in your account.'
   - name: Logsets
+    description: 'The Log Set resource allows you to interact with Logs in your account.'
   - name: Usage
+    description: 'The Usage resource allows you to access information on your data usage for your insightOps Account.'
   - name: Saved Queries
+    description: 'The Saved Queries resource allows you to interact with Saved Queries in your account.'
