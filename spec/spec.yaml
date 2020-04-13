@@ -38,13 +38,22 @@ paths:
                 Successful Query:
                   value:
                     logs:
-                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
-                    statistics: {}
+                      - b7b33bce-58f1-42db-a36a-f452aa240d73
+                    events:
+                      - labels: []
+                        timestamp: 1583009183456
+                        sequence_number: 3234730521598636000
+                        log_id: b7b33bce-58f1-42db-a36a-f452aa240d73
+                        message: '{"http.addr" : "176.9.8.97","http.timestamp" : "2020-02-29 20:53:34.530862","http.method" : "GET","http.path" : "/resources/contact-us.php","http.status" : "500","http.bytes" : 4046,"http.referer" : "www.google.ie","http.agent" : "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25","http.host" : "eu-prod-3","http.responsetime" : 11843}'
+                        links:
+                          - rel: Context
+                            href: 'https://eu.api.insight.rapid7.com/log_search/query/context/3234730521598636032?per_page=50&timestamp=1583009183456&log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&context_type=SURROUND'
                     leql:
-                      statement: where(something) calculate(count)
+                      statement: where(http.status)
                       during:
-                        from: 1
-                        to: 10000
+                        from: 1583009182433
+                        to: 1585601175000
+                        time_range: Last 30 Days
         '202':
           description: Accepted. A query that successfully started. For long running queries your first status code will always be `200`.
           content:
@@ -55,17 +64,19 @@ paths:
                 Query successfully started:
                   value:
                     logs:
-                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
-                    id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
+                      - b7b33bce-58f1-42db-a36a-f452aa240d73
                     progress: 0
-                    query:
-                      statement: 'where(foo) calculate(count:x)'
-                      during:
-                        to: 100000
-                        from: 100
+                    events: []
                     links:
-                      - rel: self
-                        href: 'https://us.api.insight.rapid7.com/log_search/query/logs/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
+                      - rel: Self
+                        href: 'https://eu.api.insight.rapid7.com/log_search/query/5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:?log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&query=where%28http.status%29&time_range=Last+30+Days'
+                    id: '5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:'
+                    leql:
+                      statement: where(http.status)
+                      during:
+                        from: 1583006834768
+                        to: 1585598834768
+                        time_range: Last 30 Days
       operationId: getQueryLogs
       description: "Query your Log entries using a LEQL query.\n\nIf the request does not return data immediately, use the [Long Running Queries](#add-link) endpoint to poll the state of the request.\_\n\n**Authentication**\n - Read Only"
       parameters:
@@ -200,7 +211,7 @@ paths:
           The saved query ID.
           Example: `/saved_query/f9c6e2c1-ac7a-4a29-8faa-a8d70f96df71/`
         example: f9c6e2c1-ac7a-4a29-8faa-a8d70f96df71
-  '/query/{query_id}':
+  '/log_search/query/{query_id}':
     get:
       summary: Get A Long Running Query
       tags:
@@ -236,7 +247,7 @@ paths:
         name: query_id
         in: path
         required: true
-  /query/logs:
+  '/query/logs':
     post:
       summary: Query Log Entries
       tags:
@@ -298,7 +309,7 @@ paths:
                       to: 1432090000000
                     statement: 'where(/.*/)'
     parameters: []
-  /query/saved_queries:
+  '/query/saved_queries':
     get:
       summary: Get Saved Queries
       tags:
@@ -639,7 +650,7 @@ paths:
                       - id: 3358b7ee-9238-4181-ab80-afb026f38081
                     type: Alert
         description: ''
-  /management/tags:
+  '/management/tags':
     get:
       summary: Get All Tags
       tags:
@@ -926,7 +937,7 @@ paths:
                       name: DemoTag-Last 20min
                       color: 0000cc
                       reserved: false
-  /management/labels:
+  '/management/labels':
     get:
       summary: Get All Labels
       responses:
@@ -988,22 +999,31 @@ paths:
                 Get Log Response Example:
                   value:
                     log:
-                      logsets_info:
-                        - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
-                          links:
-                            - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
-                              rel: Self
-                          name: ibtest
-                      name: Ante _test_ Log
+                      id: 113933b0-6b0c-4b96-830f-777071ccf470
+                      name: R7-Log
+                      tokens:
+                        - aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
+                      structures: []
                       user_data:
                         le_agent_filename: ''
                         le_agent_follow: 'false'
-                      tokens:
-                        - 70347838-87d8-43f7-82cc-fb6f63623893
                       source_type: token
                       token_seed: null
-                      structures: []
-                      id: 113933b0-6b0c-4b96-830f-777071ccf470
+                      retention_period: default
+                      links:
+                        - rel: Related
+                          href: 'https://eu.api.insight.rapid7.com/log_search/management/logs/aaaaaaaa-bbbb-cccc-dddd-eeeeeeee/topkeys'
+                      logsets_info:
+                        - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
+                          name: PHP_LogSet
+                          links:
+                            - rel: Self
+                              href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
+                        - id: 306c8474-05c9-4edd
+                          name: CloudTrail_Logset
+                          links:
+                            - rel: Self
+                              href: 'https://eu.api.insight.rapid7.com/log_search/management/logsets/306c8474-05c9-4edd'
       operationId: get-management-logs-log_id
       description: |+
         Request used to get a specific Log from an account.
@@ -1011,6 +1031,7 @@ paths:
         **Authentication**
          - Read Write
          - Read Only
+
 
 
 
@@ -1091,7 +1112,7 @@ paths:
          - Read Only
       tags:
         - Logs
-  /management/logs:
+  '/management/logs':
     get:
       summary: Get All Logs
       tags:
@@ -1792,7 +1813,6 @@ components:
             logsets_info:
               - id: 00b75d7a-9820-4ce8-8d70-82ed58dc7f53
       description: ''
-
     Successful-Query:
       title: Successful-Query
       type: object
@@ -1813,81 +1833,48 @@ components:
       properties:
         logs:
           type: array
-          example:
-            - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
           items:
             type: string
-        statistics:
-          type: object
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              labels:
+                type: array
+                items:
+                  type: object
+              timestamp:
+                type: integer
+              sequence_number:
+                type: integer
+              log_id:
+                type: string
+              message:
+                type: string
+              links:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    rel:
+                      type: string
+                    href:
+                      type: string
         leql:
           type: object
           properties:
             statement:
               type: string
-              example: where(something) calculate(count)
             during:
               type: object
               properties:
                 from:
                   type: integer
-                  example: 1
                 to:
                   type: integer
-                  example: 1000
-    Successful-Query-Started-Not-Finished:
-      title: Successful-Query-Started-Not-Finished
-      type: object
-      x-tags:
-        - Query
-      x-examples:
-        Started Not Finished:
-          logs:
-            - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
-          id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
-          query:
-            statement: 'where(foo) calculate(count:x)'
-            during:
-              to: 100000
-              from: 100
-          links:
-            - rel: self
-              href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
-      description: HTTP 202 for a query that successfully started but has not yet finished
-      properties:
-        logs:
-          type: array
-          items:
-            type: string
-            example: f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
-        id:
-          type: string
-          example: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
-        query:
-          type: object
-          properties:
-            statement:
-              type: string
-              example: 'where(foo) calculate(count:x)'
-            during:
-              type: object
-              properties:
-                to:
-                  type: integer
-                  example: 1000
-                from:
-                  type: integer
-                  example: 100
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              rel:
-                type: string
-                example: self
-              href:
-                type: string
-                example: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
+                time_range:
+                  type: string
     Post-Query:
       title: Post-Query-Logs
       type: object
@@ -2374,26 +2361,68 @@ components:
       x-examples:
         Logs Response Example:
           log:
-            logsets_info:
-              - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
-                links:
-                  - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
-                    rel: Self
-                name: ibtest
-            name: Ante _test_ Log
+            id: 113933b0-6b0c-4b96-830f-777071ccf470
+            name: R7-Log
+            tokens:
+              - aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
+            structures: []
             user_data:
               le_agent_filename: ''
               le_agent_follow: 'false'
-            tokens:
-              - 70347838-87d8-43f7-82cc-fb6f63623893
             source_type: token
             token_seed: null
-            structures: []
-            id: 113933b0-6b0c-4b96-830f-777071ccf470
+            retention_period: default
+            links:
+              - rel: Related
+                href: 'https://eu.api.insight.rapid7.com/log_search/management/logs/aaaaaaaa-bbbb-cccc-dddd-eeeeeeee/topkeys'
+            logsets_info:
+              - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
+                name: PHP_LogSet
+                links:
+                  - rel: Self
+                    href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
+              - id: 306c8474-05c9-4edd
+                name: CloudTrail_Logset
+                links:
+                  - rel: Self
+                    href: 'https://eu.api.insight.rapid7.com/log_search/management/logsets/306c8474-05c9-4edd'
+      type: object
+      description: ''
+      x-tags:
+        - Logs
       properties:
         log:
           type: object
           properties:
+            id:
+              type: string
+            name:
+              type: string
+            tokens:
+              type: array
+              items:
+                type: string
+            structures:
+              type: array
+              items:
+                type: object
+            user_data:
+              type: object
+            source_type:
+              type: string
+            token_seed:
+              type: string
+            retention_period:
+              type: string
+            links:
+              type: array
+              items:
+                type: object
+                properties:
+                  rel:
+                    type: string
+                  href:
+                    type: string
             logsets_info:
               type: array
               items:
@@ -2401,44 +2430,17 @@ components:
                 properties:
                   id:
                     type: string
+                  name:
+                    type: string
                   links:
                     type: array
                     items:
                       type: object
                       properties:
-                        href:
-                          type: string
                         rel:
                           type: string
-                  name:
-                    type: string
-            name:
-              type: string
-            user_data:
-              type: object
-              properties:
-                le_agent_filename:
-                  type: string
-                le_agent_follow:
-                  type: string
-            tokens:
-              type: array
-              items:
-                type: string
-            source_type:
-              type: string
-            token_seed:
-              type: integer
-            structures:
-              type: array
-              items:
-                type: object
-            id:
-              type: string
-      type: object
-      description: ''
-      x-tags:
-        - Logs
+                        href:
+                          type: string
     Logs:
       title: Logs
       properties:
@@ -2925,6 +2927,64 @@ components:
                 query: 1500
               expires: null
               active: true
+    Successful-Query-Started-Not-Finished:
+      title: Successful-Query-Started-Not-Finished
+      type: object
+      x-tags:
+        - Query
+      x-examples:
+        Started Not Finished:
+          logs:
+            - b7b33bce-58f1-42db-a36a-f452aa240d73
+          progress: 0
+          events: []
+          links:
+            - rel: Self
+              href: 'https://eu.api.insight.rapid7.com/log_search/query/5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:?log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&query=where%28http.status%29&time_range=Last+30+Days'
+          id: '5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:'
+          leql:
+            statement: where(http.status)
+            during:
+              from: 1583006834768
+              to: 1585598834768
+              time_range: Last 30 Days
+      description: HTTP 202 for a query that successfully started but has not yet finished
+      properties:
+        logs:
+          type: array
+          items:
+            type: string
+        progress:
+          type: integer
+        events:
+          type: array
+          items:
+            type: object
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              rel:
+                type: string
+              href:
+                type: string
+        id:
+          type: string
+        leql:
+          type: object
+          properties:
+            statement:
+              type: string
+            during:
+              type: object
+              properties:
+                from:
+                  type: integer
+                to:
+                  type: integer
+                time_range:
+                  type: string
   securitySchemes:
     x-api-key:
       name: x-api-key
@@ -2937,14 +2997,14 @@ tags:
   - name: Query
     description: 'The Query API lets you perform LEQL queries through an API interface in the same manner that you would in the UI. Via the API you can construct LEQL queries to return you search results which give you log data, or perform functions which return metrics using our `groupb`y and `calculate` options.'
   - name: Tags
-    description: 'The Tags resource allows you to interact with Tags in your account.'
+    description: The Tags resource allows you to interact with Tags in your account.
   - name: Labels
     description: 'The Labels resource allows you to interact with labels for tags & alerts in your account.'
   - name: Logs
-    description: 'The Logs resource allows you to interact with Logs in your account.'
+    description: The Logs resource allows you to interact with Logs in your account.
   - name: Logsets
-    description: 'The Log Set resource allows you to interact with Logs in your account.'
+    description: The Log Set resource allows you to interact with Logs in your account.
   - name: Usage
-    description: 'The Usage resource allows you to access information on your data usage for your insightOps Account.'
+    description: The Usage resource allows you to access information on your data usage for your insightOps Account.
   - name: Saved Queries
-    description: 'The Saved Queries resource allows you to interact with Saved Queries in your account.'
+    description: The Saved Queries resource allows you to interact with Saved Queries in your account.
