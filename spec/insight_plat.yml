@@ -1,0 +1,1132 @@
+openapi: 3.0.1
+info:
+  title: Insight Account API
+  description: 'Welcome to the reference documentation for the public APIs available for Insight Account.<br>With these REST APIs you can programmatically manage users within your Insight Account and their access to Products.<br><p>Here are a few resources to help you learn how to start using our APIs:</p><ul><li><a href="https://insight.help.rapid7.com/docs/api-overview" target="_blank">Learn about basic concepts and capabilities</a></li><li><a href="https://insight.help.rapid7.com/docs/managing-platform-api-keys" target="_blank">Get an Insight platform API Key to set up authentication</a></li><li><a href="https://insight.help.rapid7.com/docs/product-apis" target="_blank">See available Insight product APIs</a></li></ul><p>After you''ve got the basics down, you can use this API guide to find examples of requests and responses.</p><p></p><h2>APIs and Permissions</h2><p> Authorization for these APIs requires a <code>User API Key</code> created by a <code>Platform Administrator</code>. Only Platform Administrators are allowed to perform User Management functions in the Insight Platform.<br>APIs are in the context of the Insight Account associated with an API Key. No specific resource identifier for your Insight Account is required in the URIs.</p><h2>Rate Limiting</h2><p> The number of request for an InsightAccount is limited to 50 calls per minute to all APIs.<br>For more information see <a href="https://insight.help.rapid7.com/docs/api-overview#section-rate-limiting" target="_blank"> Rate Limiting overview</a><h2>Key Concepts</h2><h3>Insight Account</h3><p>This is your company''s account where you can manage users and their access to products.</p><div data-section-id="tag/organizations" name="#organizations"></a> <a name="#organizations" style="color: #333333"><h3>Organizations</h3></a></div><p>Organizations allow you to logically group Products together based on criteria such as data hosting region or business units within your company. If you have deployed products across multiple data hosting regions or if you require more than one instance of the same Insight product, you will have more than one organization within your Insight Account.<br><br><b>Example:</b><br>Company A is setup with a single Organization based in the EU. They can deploy both InsightIDR and InsightAppSec within their EU Organization but can only deploy one instance of each product.<br><br>Company B is setup with two Organizations, one in the EU and one in Canada. Company B can deploy InsightAppSec and InsightIDR in their EU Organization and can then deploy a second InsightAppSec and InsightIDR license in their Canada Organization if required.</p><br>An Organization has a unique identifier and a Display Name that in most cases is the company''s name or the name of a business unit within the company. Organization names can be changed within the Insight Platform UI see <a href="https://insight.help.rapid7.com/docs/platform-settings#section-organization-display-names" target="_blank">Change Organization Display Names</a><br><br>You might not be familiar with Organizations on the Insight Platform because your Insight Account only has a single Organization. Organizations are relevant when working with <a href="#tag/Roles">Roles</a> and <a href="#tag/Products">Products</a> APIs. For more information see their API sections.<br><h3>Products</h3><p>Products correspond to the individual Licenses of a Product within your Insight Account. To learn more about products see <a href="#tag/Products">Products section</a></p><h3>Roles</h3><p>Roles define the level of access a user has within an assigned Product. To learn more about roles see <a href="#tag/Roles">Roles section</a></p><h3>Users</h3><p>To learn more about users see <a href="#tag/Users">Users section</a></p>'
+  version: v1
+servers:
+  - url: https://{region}.api.insight.rapid7.com/account
+    variables:
+      region:
+        default: us
+        enum:
+          - us
+          - eu
+          - ca
+          - au
+          - ap
+tags:
+  - name: Users
+    description: 'Users are the individuals within your company that will login to the Insight Platform to access Insight products or the Customer Portal. Each user is a unique entity within your Insight Account. There are no limits for the number of users within your Insight Account. There are different types of users:</p><ul><li>Native Users</li><li>Externally Authorized Users</li><li>Federated Users</li></ul><div data-section-id="tag/nativeUsers" name="#nativeUsers"></a> <a name="#nativeUsers"><h3>Native Users</h3></a></div><p>Users that exist directly within your Insight Account. Native users are created through the API or UI and typically access your Insight Account through the Rapid7 Sign-In page.<div data-section-id="tag/externallyAuthorizedUsers" name="#externallyAuthorizedUsers"></a> <a name="#externallyAuthorizedUsers"><h3>Externally Authorized Users</h3></a></div><p>Users that don''t belong to your Insight Account but have been granted access to your account. For example for support queries where the Rapid7 team has requested access to your Insight Account. This externally authorized access goes through an approval process by a Platform Administrator within your Insight Account. Externally authorized users log in to their own Insight Account and can switch profile to temporarily access your Insight Account.<br>Users that have external access to your Insight Account are identified by the flag <code>external_authorized</code>.</p><div data-section-id="tag/federatedUsers" name="#federatedUsers"></a> <a name="#federatedUsers"><h3>Federated Users</h3></a></div><p>Users that are managed through a third party Identity Provider (IdP). Platform Administrators can choose to configure SSO on their Insight Account using their company''s own SAML2 compliant IdP. After enabling this feature, users can no longer be created through the Insight Account APIs or UI and need to be managed and authenticated through their company''s IdP. Users created through the IdP are identified by the flag <code>federated</code>.<br></p><div data-section-id="tag/accountStatuses" name="#accountStatuses"></a><a name="#accountStatuses"><h3>User Account Statuses</h3></a></div><table><thead><tr><th>Status</th><th>Description</th></tr></thead><tbody><tr><td><p>ACTIVE</p></td><td><p>User accounts become active when a user has completed the account setup and has logged into the Insight Platform.</p></td></tr><tr><td><p>LOCKED_OUT</p></td><td><p>User accounts become locked out when they exceed the configured number of login attempts based on your Insight Account''s password policy.</p></td></tr><tr><td><p>PASSWORD_EXPIRED</p></td><td><p>User accounts become expired when they exceed the password expiration duration based on your Insight Account''s configured password policy.</p></td></tr><tr><td><p>RECOVERY</p></td><td><p>User accounts are in a recovery state when the account is reset by a company Platform Administrator or Rapid7. This requires the individual to reset their password and security question and answer to re-activate their account.</p></td></tr><tr><td><p>STAGED</p></td><td><p>User accounts are in the staged state when first created and remain staged until the individual completes the account activation flow.</p></td></tr></tbody></table>'
+  - name: Products
+    description: 'Products are referenced by their Product Code which is a static value and will not change. API Consumers can derive Product Names such as InsightIDR using their Product Code, eg. IDR. See below for the full list of Product Codes.<br><br> Products such as InsightIDR can exist more than once within your Insight Account. See <a href="#tag/organizations">Organization section</a> for a more detailed explanation. Therefore individual Product Instances can be uniquely identified using a Product Token, a unique product identifier of type <code>String</code>. <div data-section-id="tag/productCodeList" name="#productCodeList"></a> <a name="#productCodeList"><h3>Product Code List</h3></a></div></p><table><thead><tr><th>Product Code</th><th>Product Name</th></tr></thead><tbody><tr><td>AS</td><td>InsightAppSec</td></tr><tr><td>IDR</td><td>InsightIDR</td></tr><tr><td>UBA</td><td>InsightUBA</td></tr><tr><td>OPS</td><td>InsightOps</td></tr><tr><td>IVM</td><td>InsightVM Platform Enablement</td></tr><tr><td>ICON</td><td>InsightConnect</td></tr><tr><td>TCELL</td><td>tCell</td></tr></tbody></table>'
+  - name: Roles
+    description: 'The InsightPlatform supports role based access control to allow different level of user access within a product.</p><div data-section-id="tag/roles" name="#roles"></a> <a name="#roles"><h3>Organization roles</h3></a></div><p>Roles that have an <code>organization_id</code> populated are Organization Roles. Users need an Organization Role to be able to access their assigned products. When a User is given an Organization Role, the role grants the user the relevant access across all products within with the Organization A user can only have <b>one</b> Role per Organization. If a user is given a Role for an Organization that they already have a different Role for, the old Role gets deleted when adding the new Role leaving the user with a single Role for that Organization. There are three access levels available:<ul><li>Product Admin</li><li>Read Write</li><li>Read Only</li></ul>The permissions that each role provides within specified products can be found <a href="https://insight.help.rapid7.com/docs/product-roles" target="_blank">here</a>'
+  - name: Error Responses
+    description: |-
+      <h3>Request Error Handling</h3><p>Any response from the API with an HTTP Status Code in the 4xx or 5xx range indicates an error. If in the 4xx range it indicates a client-side error, where in the 5xx range it indicates a server-side error. Error Codes will be included in the response body, which can provide the consumer with further context into the cause of the error in cases where the message is not explicitly clear. <br><br> Requests are rejected if: <ul><li>Requests are missing <code>required</code> attributes</li><li>Requests contain unmatched attributes</li><li>Requests contain invalid attribute values</li><li>Requests fail business logic validation</li></ul><br>Please see each API section for their conditions. <br><br>Below is a sample Error Response that can be returned from a bad request.<pre><code>{<br>   "code": "BAD_REQUEST",<br>   "message": "Request is missing required property: email",<br>   "correlation_id": "d8b70e55-3f40-41d0-9df9-b907577f1504"<br>}</pre></code><br><table><thead><tr><th>Name</th><th>Description</th></tr></thead><tbody><tr><td><p>Code</p></td><td><p>A unique String to provide context about an error condition. Can be used to programmatically handle errors. For more information, see <a href="#tag/errorcodes">list of Error Codes</a>.<br><br>Type: String</p></td></tr><tr><td><p>Message</p></td><td><p>A humanly readable detailed description of the error condition.<br><br>Type: String</p></td></tr><tr><td><p>Correlation_id</p></td><td><p>Unique identifier for your request. Use this to contact Rapid7 support for further investigations into the problem.<br><br>Type: UUID</p></td></tr></tbody></table><br><div data-section-id="tag/errorcodes" name="#errorcodes"></a>
+      <a name="#errorcodes"><h2>Error Codes</h2></a>
+      <p>The following section provides further context into the cause of the error, detailed by the "code" property in the response:</p>
+      <div style="height:600px;overflow:auto;">
+      <table style="width:100%">
+      <thead>
+      <tr>
+      <th style="width:30%">Error Code</th>
+      <th style="width:50%">Error Description</th>
+      <th style="width:20%">HTTP Status Code</th>
+      </tr>
+      </thead>
+      <tbody><tr><td>BAD_REQUEST</td><td>Cannot process the request due to a client error:<br><ul><li>Request syntax might be malformed</li><li>Request might be missing required fields</li><li>Request might contain invalid fields</li><li>Field constraints such as <i>NotNull</i></td><td>400 BAD_REQUEST</td></tr><tr><td>UNAUTHORIZED</td><td>Invalid authorization credentials</td><td>401 UNAUTHORIZED</td></tr><tr><td>ACCESS_DENIED</td><td>The API Key is not authorized to perform the requested operation</td><td>403 FORBIDDEN</td></tr><tr><td>FORBIDDEN_UPDATE_EXT_AUTHD_USER_DETAILS</td><td>You cannot update user details for a user that is externally authorized</td><td>403 FORBIDDEN</td></tr><tr><td>RESOURCE_NOT_FOUND</td><td>Resource not found. <br> <i>Resource details will be provided</i></td><td>404 NOT_FOUND</td></tr><tr><td>NOT_FOUND</td><td>Requested endpoint does not exist.</td><td>404 NOT_FOUND</td></tr><tr><td>CONFLICT_ADD_USER_TO_FEDERATED_CUSTOMER</td><td>You cannot create a user for a customer account that has an external Identity Provider (IdP) enabled</td><td>409 CONFLICT</td></tr><tr><td>CONFLICT_CHANGE_OWN_ADMIN_STATUS</td><td>You cannot change the Platform Admin status of the user tied to this API key</td><td>409 CONFLICT</td></tr><tr><td>INVALID_PROPERTY_VALUE</td><td>Request contains an invalid property value</td><td>422 UNPROCESSABLE_ENTITY</td></tr><tr><td>DUPLICATE_ORGANIZATION_ROLE</td><td>The request may not have more than one Role for the same Organization</td><td>422 UNPROCESSABLE_ENTITY</td></tr><tr><td>INTERNAL_SERVER_ERROR</td><td>An unexpected error occurred while processing the request.</td><td>500 INTERNAL_SERVER_ERROR</td></tr></tbdoy></table></div></div><br><br><br>
+  - name: Additional Information
+    description: '<div data-section-id="tag/timezones" name="#timezones"></a><a name="#timezones"><h2>Time Zones</h2></a><p>To identify the available time zones:</p><div style="height:600px;overflow:auto;"><table><thead><tr><th>TimeZones</th><th>UTC Offset</th></tr></thead><tbody><tr><td>Africa/Abidjan</td><td>00:00</td></tr><tr><td>Africa/Accra</td><td>00:00</td></tr><tr><td>Africa/Addis_Ababa</td><td>+03:00</td></tr><tr><td>Africa/Algiers</td><td>+01:00</td></tr><tr><td>Africa/Asmara</td><td>+03:00</td></tr><tr><td>Africa/Asmera</td><td>+03:00</td></tr><tr><td>Africa/Bamako</td><td>00:00</td></tr><tr><td>Africa/Bangui</td><td>+01:00</td></tr><tr><td>Africa/Banjul</td><td>00:00</td></tr><tr><td>Africa/Bissau</td><td>00:00</td></tr><tr><td>Africa/Blantyre</td><td>+02:00</td></tr><tr><td>Africa/Brazzaville</td><td>+01:00</td></tr><tr><td>Africa/Bujumbura</td><td>+02:00</td></tr><tr><td>Africa/Cairo</td><td>+02:00</td></tr><tr><td>Africa/Casablanca</td><td>+01:00</td></tr><tr><td>Africa/Ceuta</td><td>+02:00</td></tr><tr><td>Africa/Conakry</td><td>00:00</td></tr><tr><td>Africa/Dakar</td><td>00:00</td></tr><tr><td>Africa/Dar_es_Salaam</td><td>+03:00</td></tr><tr><td>Africa/Djibouti</td><td>+03:00</td></tr><tr><td>Africa/Douala</td><td>+01:00</td></tr><tr><td>Africa/El_Aaiun</td><td>+01:00</td></tr><tr><td>Africa/Freetown</td><td>00:00</td></tr><tr><td>Africa/Gaborone</td><td>+02:00</td></tr><tr><td>Africa/Harare</td><td>+02:00</td></tr><tr><td>Africa/Johannesburg</td><td>+02:00</td></tr><tr><td>Africa/Juba</td><td>+03:00</td></tr><tr><td>Africa/Kampala</td><td>+03:00</td></tr><tr><td>Africa/Khartoum</td><td>+02:00</td></tr><tr><td>Africa/Kigali</td><td>+02:00</td></tr><tr><td>Africa/Kinshasa</td><td>+01:00</td></tr><tr><td>Africa/Lagos</td><td>+01:00</td></tr><tr><td>Africa/Libreville</td><td>+01:00</td></tr><tr><td>Africa/Lome</td><td>00:00</td></tr><tr><td>Africa/Luanda</td><td>+01:00</td></tr><tr><td>Africa/Lubumbashi</td><td>+02:00</td></tr><tr><td>Africa/Lusaka</td><td>+02:00</td></tr><tr><td>Africa/Malabo</td><td>+01:00</td></tr><tr><td>Africa/Maputo</td><td>+02:00</td></tr><tr><td>Africa/Maseru</td><td>+02:00</td></tr><tr><td>Africa/Mbabane</td><td>+02:00</td></tr><tr><td>Africa/Mogadishu</td><td>+03:00</td></tr><tr><td>Africa/Monrovia</td><td>00:00</td></tr><tr><td>Africa/Nairobi</td><td>+03:00</td></tr><tr><td>Africa/Ndjamena</td><td>+01:00</td></tr><tr><td>Africa/Niamey</td><td>+01:00</td></tr><tr><td>Africa/Nouakchott</td><td>00:00</td></tr><tr><td>Africa/Ouagadougou</td><td>00:00</td></tr><tr><td>Africa/Porto-Novo</td><td>+01:00</td></tr><tr><td>Africa/Sao_Tome</td><td>+01:00</td></tr><tr><td>Africa/Timbuktu</td><td>00:00</td></tr><tr><td>Africa/Tripoli</td><td>+02:00</td></tr><tr><td>Africa/Tunis</td><td>+01:00</td></tr><tr><td>Africa/Windhoek</td><td>+02:00</td></tr><tr><td>America/Adak</td><td>-09:00</td></tr><tr><td>America/Anchorage</td><td>-08:00</td></tr><tr><td>America/Anguilla</td><td>-04:00</td></tr><tr><td>America/Antigua</td><td>-04:00</td></tr><tr><td>America/Araguaina</td><td>-03:00</td></tr><tr><td>America/Argentina/Buenos_Aires</td><td>-03:00</td></tr><tr><td>America/Argentina/Catamarca</td><td>-03:00</td></tr><tr><td>America/Argentina/ComodRivadavia</td><td>-03:00</td></tr><tr><td>America/Argentina/Cordoba</td><td>-03:00</td></tr><tr><td>America/Argentina/Jujuy</td><td>-03:00</td></tr><tr><td>America/Argentina/La_Rioja</td><td>-03:00</td></tr><tr><td>America/Argentina/Mendoza</td><td>-03:00</td></tr><tr><td>America/Argentina/Rio_Gallegos</td><td>-03:00</td></tr><tr><td>America/Argentina/Salta</td><td>-03:00</td></tr><tr><td>America/Argentina/San_Juan</td><td>-03:00</td></tr><tr><td>America/Argentina/San_Luis</td><td>-03:00</td></tr><tr><td>America/Argentina/Tucuman</td><td>-03:00</td></tr><tr><td>America/Argentina/Ushuaia</td><td>-03:00</td></tr><tr><td>America/Aruba</td><td>-04:00</td></tr><tr><td>America/Asuncion</td><td>-04:00</td></tr><tr><td>America/Atikokan</td><td>-05:00</td></tr><tr><td>America/Atka</td><td>-09:00</td></tr><tr><td>America/Bahia</td><td>-03:00</td></tr><tr><td>America/Bahia_Banderas</td><td>-05:00</td></tr><tr><td>America/Barbados</td><td>-04:00</td></tr><tr><td>America/Belem</td><td>-03:00</td></tr><tr><td>America/Belize</td><td>-06:00</td></tr><tr><td>America/Blanc-Sablon</td><td>-04:00</td></tr><tr><td>America/Boa_Vista</td><td>-04:00</td></tr><tr><td>America/Bogota</td><td>-05:00</td></tr><tr><td>America/Boise</td><td>-06:00</td></tr><tr><td>America/Buenos_Aires</td><td>-03:00</td></tr><tr><td>America/Cambridge_Bay</td><td>-06:00</td></tr><tr><td>America/Campo_Grande</td><td>-04:00</td></tr><tr><td>America/Cancun</td><td>-05:00</td></tr><tr><td>America/Caracas</td><td>-04:00</td></tr><tr><td>America/Catamarca</td><td>-03:00</td></tr><tr><td>America/Cayenne</td><td>-03:00</td></tr><tr><td>America/Cayman</td><td>-05:00</td></tr><tr><td>America/Chicago</td><td>-05:00</td></tr><tr><td>America/Chihuahua</td><td>-06:00</td></tr><tr><td>America/Coral_Harbour</td><td>-05:00</td></tr><tr><td>America/Cordoba</td><td>-03:00</td></tr><tr><td>America/Costa_Rica</td><td>-06:00</td></tr><tr><td>America/Creston</td><td>-07:00</td></tr><tr><td>America/Cuiaba</td><td>-04:00</td></tr><tr><td>America/Curacao</td><td>-04:00</td></tr><tr><td>America/Danmarkshavn</td><td>00:00</td></tr><tr><td>America/Dawson</td><td>-07:00</td></tr><tr><td>America/Dawson_Creek</td><td>-07:00</td></tr><tr><td>America/Denver</td><td>-06:00</td></tr><tr><td>America/Detroit</td><td>-04:00</td></tr><tr><td>America/Dominica</td><td>-04:00</td></tr><tr><td>America/Edmonton</td><td>-06:00</td></tr><tr><td>America/Eirunepe</td><td>-05:00</td></tr><tr><td>America/El_Salvador</td><td>-06:00</td></tr><tr><td>America/Ensenada</td><td>-07:00</td></tr><tr><td>America/Fort_Nelson</td><td>-07:00</td></tr><tr><td>America/Fort_Wayne</td><td>-04:00</td></tr><tr><td>America/Fortaleza</td><td>-03:00</td></tr><tr><td>America/Glace_Bay</td><td>-03:00</td></tr><tr><td>America/Godthab</td><td>-02:00</td></tr><tr><td>America/Goose_Bay</td><td>-03:00</td></tr><tr><td>America/Grand_Turk</td><td>-04:00</td></tr><tr><td>America/Grenada</td><td>-04:00</td></tr><tr><td>America/Guadeloupe</td><td>-04:00</td></tr><tr><td>America/Guatemala</td><td>-06:00</td></tr><tr><td>America/Guayaquil</td><td>-05:00</td></tr><tr><td>America/Guyana</td><td>-04:00</td></tr><tr><td>America/Halifax</td><td>-03:00</td></tr><tr><td>America/Havana</td><td>-04:00</td></tr><tr><td>America/Hermosillo</td><td>-07:00</td></tr><tr><td>America/Indiana/Indianapolis</td><td>-04:00</td></tr><tr><td>America/Indiana/Knox</td><td>-05:00</td></tr><tr><td>America/Indiana/Marengo</td><td>-04:00</td></tr><tr><td>America/Indiana/Petersburg</td><td>-04:00</td></tr><tr><td>America/Indiana/Tell_City</td><td>-05:00</td></tr><tr><td>America/Indiana/Vevay</td><td>-04:00</td></tr><tr><td>America/Indiana/Vincennes</td><td>-04:00</td></tr><tr><td>America/Indiana/Winamac</td><td>-04:00</td></tr><tr><td>America/Indianapolis</td><td>-04:00</td></tr><tr><td>America/Inuvik</td><td>-06:00</td></tr><tr><td>America/Iqaluit</td><td>-04:00</td></tr><tr><td>America/Jamaica</td><td>-05:00</td></tr><tr><td>America/Jujuy</td><td>-03:00</td></tr><tr><td>America/Juneau</td><td>-08:00</td></tr><tr><td>America/Kentucky/Louisville</td><td>-04:00</td></tr><tr><td>America/Kentucky/Monticello</td><td>-04:00</td></tr><tr><td>America/Knox_IN</td><td>-05:00</td></tr><tr><td>America/Kralendijk</td><td>-04:00</td></tr><tr><td>America/La_Paz</td><td>-04:00</td></tr><tr><td>America/Lima</td><td>-05:00</td></tr><tr><td>America/Los_Angeles</td><td>-07:00</td></tr><tr><td>America/Louisville</td><td>-04:00</td></tr><tr><td>America/Lower_Princes</td><td>-04:00</td></tr><tr><td>America/Maceio</td><td>-03:00</td></tr><tr><td>America/Managua</td><td>-06:00</td></tr><tr><td>America/Manaus</td><td>-04:00</td></tr><tr><td>America/Marigot</td><td>-04:00</td></tr><tr><td>America/Martinique</td><td>-04:00</td></tr><tr><td>America/Matamoros</td><td>-05:00</td></tr><tr><td>America/Mazatlan</td><td>-06:00</td></tr><tr><td>America/Mendoza</td><td>-03:00</td></tr><tr><td>America/Menominee</td><td>-05:00</td></tr><tr><td>America/Merida</td><td>-05:00</td></tr><tr><td>America/Metlakatla</td><td>-08:00</td></tr><tr><td>America/Mexico_City</td><td>-05:00</td></tr><tr><td>America/Miquelon</td><td>-02:00</td></tr><tr><td>America/Moncton</td><td>-03:00</td></tr><tr><td>America/Monterrey</td><td>-05:00</td></tr><tr><td>America/Montevideo</td><td>-03:00</td></tr><tr><td>America/Montreal</td><td>-04:00</td></tr><tr><td>America/Montserrat</td><td>-04:00</td></tr><tr><td>America/Nassau</td><td>-04:00</td></tr><tr><td>America/New_York</td><td>-04:00</td></tr><tr><td>America/Nipigon</td><td>-04:00</td></tr><tr><td>America/Nome</td><td>-08:00</td></tr><tr><td>America/Noronha</td><td>-02:00</td></tr><tr><td>America/North_Dakota/Beulah</td><td>-05:00</td></tr><tr><td>America/North_Dakota/Center</td><td>-05:00</td></tr><tr><td>America/North_Dakota/New_Salem</td><td>-05:00</td></tr><tr><td>America/Ojinaga</td><td>-06:00</td></tr><tr><td>America/Panama</td><td>-05:00</td></tr><tr><td>America/Pangnirtung</td><td>-04:00</td></tr><tr><td>America/Paramaribo</td><td>-03:00</td></tr><tr><td>America/Phoenix</td><td>-07:00</td></tr><tr><td>America/Port-au-Prince</td><td>-04:00</td></tr><tr><td>America/Port_of_Spain</td><td>-04:00</td></tr><tr><td>America/Porto_Acre</td><td>-05:00</td></tr><tr><td>America/Porto_Velho</td><td>-04:00</td></tr><tr><td>America/Puerto_Rico</td><td>-04:00</td></tr><tr><td>America/Punta_Arenas</td><td>-03:00</td></tr><tr><td>America/Rainy_River</td><td>-05:00</td></tr><tr><td>America/Rankin_Inlet</td><td>-05:00</td></tr><tr><td>America/Recife</td><td>-03:00</td></tr><tr><td>America/Regina</td><td>-06:00</td></tr><tr><td>America/Resolute</td><td>-05:00</td></tr><tr><td>America/Rio_Branco</td><td>-05:00</td></tr><tr><td>America/Rosario</td><td>-03:00</td></tr><tr><td>America/Santa_Isabel</td><td>-07:00</td></tr><tr><td>America/Santarem</td><td>-03:00</td></tr><tr><td>America/Santiago</td><td>-04:00</td></tr><tr><td>America/Santo_Domingo</td><td>-04:00</td></tr><tr><td>America/Sao_Paulo</td><td>-03:00</td></tr><tr><td>America/Scoresbysund</td><td>00:00</td></tr><tr><td>America/Shiprock</td><td>-06:00</td></tr><tr><td>America/Sitka</td><td>-08:00</td></tr><tr><td>America/St_Barthelemy</td><td>-04:00</td></tr><tr><td>America/St_Johns</td><td>-02:30</td></tr><tr><td>America/St_Kitts</td><td>-04:00</td></tr><tr><td>America/St_Lucia</td><td>-04:00</td></tr><tr><td>America/St_Thomas</td><td>-04:00</td></tr><tr><td>America/St_Vincent</td><td>-04:00</td></tr><tr><td>America/Swift_Current</td><td>-06:00</td></tr><tr><td>America/Tegucigalpa</td><td>-06:00</td></tr><tr><td>America/Thule</td><td>-03:00</td></tr><tr><td>America/Thunder_Bay</td><td>-04:00</td></tr><tr><td>America/Tijuana</td><td>-07:00</td></tr><tr><td>America/Toronto</td><td>-04:00</td></tr><tr><td>America/Tortola</td><td>-04:00</td></tr><tr><td>America/Vancouver</td><td>-07:00</td></tr><tr><td>America/Virgin</td><td>-04:00</td></tr><tr><td>America/Whitehorse</td><td>-07:00</td></tr><tr><td>America/Winnipeg</td><td>-05:00</td></tr><tr><td>America/Yakutat</td><td>-08:00</td></tr><tr><td>America/Yellowknife</td><td>-06:00</td></tr><tr><td>Antarctica/Casey</td><td>+08:00</td></tr><tr><td>Antarctica/Davis</td><td>+07:00</td></tr><tr><td>Antarctica/DumontDUrville</td><td>+10:00</td></tr><tr><td>Antarctica/Macquarie</td><td>+11:00</td></tr><tr><td>Antarctica/Mawson</td><td>+05:00</td></tr><tr><td>Antarctica/McMurdo</td><td>+12:00</td></tr><tr><td>Antarctica/Palmer</td><td>-03:00</td></tr><tr><td>Antarctica/Rothera</td><td>-03:00</td></tr><tr><td>Antarctica/South_Pole</td><td>+12:00</td></tr><tr><td>Antarctica/Syowa</td><td>+03:00</td></tr><tr><td>Antarctica/Troll</td><td>+02:00</td></tr><tr><td>Antarctica/Vostok</td><td>+06:00</td></tr><tr><td>Arctic/Longyearbyen</td><td>+02:00</td></tr><tr><td>Asia/Aden</td><td>+03:00</td></tr><tr><td>Asia/Almaty</td><td>+06:00</td></tr><tr><td>Asia/Amman</td><td>+03:00</td></tr><tr><td>Asia/Anadyr</td><td>+12:00</td></tr><tr><td>Asia/Aqtau</td><td>+05:00</td></tr><tr><td>Asia/Aqtobe</td><td>+05:00</td></tr><tr><td>Asia/Ashgabat</td><td>+05:00</td></tr><tr><td>Asia/Ashkhabad</td><td>+05:00</td></tr><tr><td>Asia/Atyrau</td><td>+05:00</td></tr><tr><td>Asia/Baghdad</td><td>+03:00</td></tr><tr><td>Asia/Bahrain</td><td>+03:00</td></tr><tr><td>Asia/Baku</td><td>+04:00</td></tr><tr><td>Asia/Bangkok</td><td>+07:00</td></tr><tr><td>Asia/Barnaul</td><td>+07:00</td></tr><tr><td>Asia/Beirut</td><td>+03:00</td></tr><tr><td>Asia/Bishkek</td><td>+06:00</td></tr><tr><td>Asia/Brunei</td><td>+08:00</td></tr><tr><td>Asia/Calcutta</td><td>+05:30</td></tr><tr><td>Asia/Chita</td><td>+09:00</td></tr><tr><td>Asia/Choibalsan</td><td>+08:00</td></tr><tr><td>Asia/Chongqing</td><td>+08:00</td></tr><tr><td>Asia/Chungking</td><td>+08:00</td></tr><tr><td>Asia/Colombo</td><td>+05:30</td></tr><tr><td>Asia/Dacca</td><td>+06:00</td></tr><tr><td>Asia/Damascus</td><td>+03:00</td></tr><tr><td>Asia/Dhaka</td><td>+06:00</td></tr><tr><td>Asia/Dili</td><td>+09:00</td></tr><tr><td>Asia/Dubai</td><td>+04:00</td></tr><tr><td>Asia/Dushanbe</td><td>+05:00</td></tr><tr><td>Asia/Famagusta</td><td>+03:00</td></tr><tr><td>Asia/Gaza</td><td>+03:00</td></tr><tr><td>Asia/Harbin</td><td>+08:00</td></tr><tr><td>Asia/Hebron</td><td>+03:00</td></tr><tr><td>Asia/Ho_Chi_Minh</td><td>+07:00</td></tr><tr><td>Asia/Hong_Kong</td><td>+08:00</td></tr><tr><td>Asia/Hovd</td><td>+07:00</td></tr><tr><td>Asia/Irkutsk</td><td>+08:00</td></tr><tr><td>Asia/Istanbul</td><td>+03:00</td></tr><tr><td>Asia/Jakarta</td><td>+07:00</td></tr><tr><td>Asia/Jayapura</td><td>+09:00</td></tr><tr><td>Asia/Jerusalem</td><td>+03:00</td></tr><tr><td>Asia/Kabul</td><td>+04:30</td></tr><tr><td>Asia/Kamchatka</td><td>+12:00</td></tr><tr><td>Asia/Karachi</td><td>+05:00</td></tr><tr><td>Asia/Kashgar</td><td>+06:00</td></tr><tr><td>Asia/Kathmandu</td><td>+05:45</td></tr><tr><td>Asia/Katmandu</td><td>+05:45</td></tr><tr><td>Asia/Khandyga</td><td>+09:00</td></tr><tr><td>Asia/Kolkata</td><td>+05:30</td></tr><tr><td>Asia/Krasnoyarsk</td><td>+07:00</td></tr><tr><td>Asia/Kuala_Lumpur</td><td>+08:00</td></tr><tr><td>Asia/Kuching</td><td>+08:00</td></tr><tr><td>Asia/Kuwait</td><td>+03:00</td></tr><tr><td>Asia/Macao</td><td>+08:00</td></tr><tr><td>Asia/Macau</td><td>+08:00</td></tr><tr><td>Asia/Magadan</td><td>+11:00</td></tr><tr><td>Asia/Makassar</td><td>+08:00</td></tr><tr><td>Asia/Manila</td><td>+08:00</td></tr><tr><td>Asia/Muscat</td><td>+04:00</td></tr><tr><td>Asia/Nicosia</td><td>+03:00</td></tr><tr><td>Asia/Novokuznetsk</td><td>+07:00</td></tr><tr><td>Asia/Novosibirsk</td><td>+07:00</td></tr><tr><td>Asia/Omsk</td><td>+06:00</td></tr><tr><td>Asia/Oral</td><td>+05:00</td></tr><tr><td>Asia/Phnom_Penh</td><td>+07:00</td></tr><tr><td>Asia/Pontianak</td><td>+07:00</td></tr><tr><td>Asia/Pyongyang</td><td>+09:00</td></tr><tr><td>Asia/Qatar</td><td>+03:00</td></tr><tr><td>Asia/Qyzylorda</td><td>+06:00</td></tr><tr><td>Asia/Rangoon</td><td>+06:30</td></tr><tr><td>Asia/Riyadh</td><td>+03:00</td></tr><tr><td>Asia/Saigon</td><td>+07:00</td></tr><tr><td>Asia/Sakhalin</td><td>+11:00</td></tr><tr><td>Asia/Samarkand</td><td>+05:00</td></tr><tr><td>Asia/Seoul</td><td>+09:00</td></tr><tr><td>Asia/Shanghai</td><td>+08:00</td></tr><tr><td>Asia/Singapore</td><td>+08:00</td></tr><tr><td>Asia/Srednekolymsk</td><td>+11:00</td></tr><tr><td>Asia/Taipei</td><td>+08:00</td></tr><tr><td>Asia/Tashkent</td><td>+05:00</td></tr><tr><td>Asia/Tbilisi</td><td>+04:00</td></tr><tr><td>Asia/Tehran</td><td>+04:30</td></tr><tr><td>Asia/Tel_Aviv</td><td>+03:00</td></tr><tr><td>Asia/Thimbu</td><td>+06:00</td></tr><tr><td>Asia/Thimphu</td><td>+06:00</td></tr><tr><td>Asia/Tokyo</td><td>+09:00</td></tr><tr><td>Asia/Tomsk</td><td>+07:00</td></tr><tr><td>Asia/Ujung_Pandang</td><td>+08:00</td></tr><tr><td>Asia/Ulaanbaatar</td><td>+08:00</td></tr><tr><td>Asia/Ulan_Bator</td><td>+08:00</td></tr><tr><td>Asia/Urumqi</td><td>+06:00</td></tr><tr><td>Asia/Ust-Nera</td><td>+10:00</td></tr><tr><td>Asia/Vientiane</td><td>+07:00</td></tr><tr><td>Asia/Vladivostok</td><td>+10:00</td></tr><tr><td>Asia/Yakutsk</td><td>+09:00</td></tr><tr><td>Asia/Yangon</td><td>+06:30</td></tr><tr><td>Asia/Yekaterinburg</td><td>+05:00</td></tr><tr><td>Asia/Yerevan</td><td>+04:00</td></tr><tr><td>Atlantic/Azores</td><td>00:00</td></tr><tr><td>Atlantic/Bermuda</td><td>-03:00</td></tr><tr><td>Atlantic/Canary</td><td>+01:00</td></tr><tr><td>Atlantic/Cape_Verde</td><td>-01:00</td></tr><tr><td>Atlantic/Faeroe</td><td>+01:00</td></tr><tr><td>Atlantic/Faroe</td><td>+01:00</td></tr><tr><td>Atlantic/Jan_Mayen</td><td>+02:00</td></tr><tr><td>Atlantic/Madeira</td><td>+01:00</td></tr><tr><td>Atlantic/Reykjavik</td><td>00:00</td></tr><tr><td>Atlantic/South_Georgia</td><td>-02:00</td></tr><tr><td>Atlantic/St_Helena</td><td>00:00</td></tr><tr><td>Atlantic/Stanley</td><td>-03:00</td></tr><tr><td>Australia/ACT</td><td>+10:00</td></tr><tr><td>Australia/Adelaide</td><td>+09:30</td></tr><tr><td>Australia/Brisbane</td><td>+10:00</td></tr><tr><td>Australia/Broken_Hill</td><td>+09:30</td></tr><tr><td>Australia/Canberra</td><td>+10:00</td></tr><tr><td>Australia/Currie</td><td>+10:00</td></tr><tr><td>Australia/Darwin</td><td>+09:30</td></tr><tr><td>Australia/Eucla</td><td>+08:45</td></tr><tr><td>Australia/Hobart</td><td>+10:00</td></tr><tr><td>Australia/LHI</td><td>+10:30</td></tr><tr><td>Australia/Lindeman</td><td>+10:00</td></tr><tr><td>Australia/Lord_Howe</td><td>+10:30</td></tr><tr><td>Australia/Melbourne</td><td>+10:00</td></tr><tr><td>Australia/NSW</td><td>+10:00</td></tr><tr><td>Australia/North</td><td>+09:30</td></tr><tr><td>Australia/Perth</td><td>+08:00</td></tr><tr><td>Australia/Queensland</td><td>+10:00</td></tr><tr><td>Australia/South</td><td>+09:30</td></tr><tr><td>Australia/Sydney</td><td>+10:00</td></tr><tr><td>Australia/Tasmania</td><td>+10:00</td></tr><tr><td>Australia/Victoria</td><td>+10:00</td></tr><tr><td>Australia/West</td><td>+08:00</td></tr><tr><td>Australia/Yancowinna</td><td>+09:30</td></tr><tr><td>Brazil/Acre</td><td>-05:00</td></tr><tr><td>Brazil/DeNoronha</td><td>-02:00</td></tr><tr><td>Brazil/East</td><td>-03:00</td></tr><tr><td>Brazil/West</td><td>-04:00</td></tr><tr><td>CET</td><td>+02:00</td></tr><tr><td>CST6CDT</td><td>-05:00</td></tr><tr><td>Canada/Atlantic</td><td>-03:00</td></tr><tr><td>Canada/Central</td><td>-05:00</td></tr><tr><td>Canada/Eastern</td><td>-04:00</td></tr><tr><td>Canada/Mountain</td><td>-06:00</td></tr><tr><td>Canada/Newfoundland</td><td>-02:30</td></tr><tr><td>Canada/Pacific</td><td>-07:00</td></tr><tr><td>Canada/Saskatchewan</td><td>-06:00</td></tr><tr><td>Canada/Yukon</td><td>-07:00</td></tr><tr><td>Chile/Continental</td><td>-04:00</td></tr><tr><td>Chile/EasterIsland</td><td>-06:00</td></tr><tr><td>Cuba</td><td>-04:00</td></tr><tr><td>EET</td><td>+03:00</td></tr><tr><td>EST5EDT</td><td>-04:00</td></tr><tr><td>Egypt</td><td>+02:00</td></tr><tr><td>Eire</td><td>+01:00</td></tr><tr><td>Etc/GMT</td><td>00:00</td></tr><tr><td>Etc/GMT+0</td><td>00:00</td></tr><tr><td>Etc/GMT+1</td><td>-01:00</td></tr><tr><td>Etc/GMT+10</td><td>-10:00</td></tr><tr><td>Etc/GMT+11</td><td>-11:00</td></tr><tr><td>Etc/GMT+12</td><td>-12:00</td></tr><tr><td>Etc/GMT+2</td><td>-02:00</td></tr><tr><td>Etc/GMT+3</td><td>-03:00</td></tr><tr><td>Etc/GMT+4</td><td>-04:00</td></tr><tr><td>Etc/GMT+5</td><td>-05:00</td></tr><tr><td>Etc/GMT+6</td><td>-06:00</td></tr><tr><td>Etc/GMT+7</td><td>-07:00</td></tr><tr><td>Etc/GMT+8</td><td>-08:00</td></tr><tr><td>Etc/GMT+9</td><td>-09:00</td></tr><tr><td>Etc/GMT-0</td><td>00:00</td></tr><tr><td>Etc/GMT-1</td><td>+01:00</td></tr><tr><td>Etc/GMT-10</td><td>+10:00</td></tr><tr><td>Etc/GMT-11</td><td>+11:00</td></tr><tr><td>Etc/GMT-12</td><td>+12:00</td></tr><tr><td>Etc/GMT-13</td><td>+13:00</td></tr><tr><td>Etc/GMT-14</td><td>+14:00</td></tr><tr><td>Etc/GMT-2</td><td>+02:00</td></tr><tr><td>Etc/GMT-3</td><td>+03:00</td></tr><tr><td>Etc/GMT-4</td><td>+04:00</td></tr><tr><td>Etc/GMT-5</td><td>+05:00</td></tr><tr><td>Etc/GMT-6</td><td>+06:00</td></tr><tr><td>Etc/GMT-7</td><td>+07:00</td></tr><tr><td>Etc/GMT-8</td><td>+08:00</td></tr><tr><td>Etc/GMT-9</td><td>+09:00</td></tr><tr><td>Etc/GMT0</td><td>00:00</td></tr><tr><td>Etc/Greenwich</td><td>00:00</td></tr><tr><td>Etc/UCT</td><td>00:00</td></tr><tr><td>Etc/UTC</td><td>00:00</td></tr><tr><td>Etc/Universal</td><td>00:00</td></tr><tr><td>Etc/Zulu</td><td>00:00</td></tr><tr><td>Europe/Amsterdam</td><td>+02:00</td></tr><tr><td>Europe/Andorra</td><td>+02:00</td></tr><tr><td>Europe/Astrakhan</td><td>+04:00</td></tr><tr><td>Europe/Athens</td><td>+03:00</td></tr><tr><td>Europe/Belfast</td><td>+01:00</td></tr><tr><td>Europe/Belgrade</td><td>+02:00</td></tr><tr><td>Europe/Berlin</td><td>+02:00</td></tr><tr><td>Europe/Bratislava</td><td>+02:00</td></tr><tr><td>Europe/Brussels</td><td>+02:00</td></tr><tr><td>Europe/Bucharest</td><td>+03:00</td></tr><tr><td>Europe/Budapest</td><td>+02:00</td></tr><tr><td>Europe/Busingen</td><td>+02:00</td></tr><tr><td>Europe/Chisinau</td><td>+03:00</td></tr><tr><td>Europe/Copenhagen</td><td>+02:00</td></tr><tr><td>Europe/Dublin</td><td>+01:00</td></tr><tr><td>Europe/Gibraltar</td><td>+02:00</td></tr><tr><td>Europe/Guernsey</td><td>+01:00</td></tr><tr><td>Europe/Helsinki</td><td>+03:00</td></tr><tr><td>Europe/Isle_of_Man</td><td>+01:00</td></tr><tr><td>Europe/Istanbul</td><td>+03:00</td></tr><tr><td>Europe/Jersey</td><td>+01:00</td></tr><tr><td>Europe/Kaliningrad</td><td>+02:00</td></tr><tr><td>Europe/Kiev</td><td>+03:00</td></tr><tr><td>Europe/Kirov</td><td>+03:00</td></tr><tr><td>Europe/Lisbon</td><td>+01:00</td></tr><tr><td>Europe/Ljubljana</td><td>+02:00</td></tr><tr><td>Europe/London</td><td>+01:00</td></tr><tr><td>Europe/Luxembourg</td><td>+02:00</td></tr><tr><td>Europe/Madrid</td><td>+02:00</td></tr><tr><td>Europe/Malta</td><td>+02:00</td></tr><tr><td>Europe/Mariehamn</td><td>+03:00</td></tr><tr><td>Europe/Minsk</td><td>+03:00</td></tr><tr><td>Europe/Monaco</td><td>+02:00</td></tr><tr><td>Europe/Moscow</td><td>+03:00</td></tr><tr><td>Europe/Nicosia</td><td>+03:00</td></tr><tr><td>Europe/Oslo</td><td>+02:00</td></tr><tr><td>Europe/Paris</td><td>+02:00</td></tr><tr><td>Europe/Podgorica</td><td>+02:00</td></tr><tr><td>Europe/Prague</td><td>+02:00</td></tr><tr><td>Europe/Riga</td><td>+03:00</td></tr><tr><td>Europe/Rome</td><td>+02:00</td></tr><tr><td>Europe/Samara</td><td>+04:00</td></tr><tr><td>Europe/San_Marino</td><td>+02:00</td></tr><tr><td>Europe/Sarajevo</td><td>+02:00</td></tr><tr><td>Europe/Saratov</td><td>+04:00</td></tr><tr><td>Europe/Simferopol</td><td>+03:00</td></tr><tr><td>Europe/Skopje</td><td>+02:00</td></tr><tr><td>Europe/Sofia</td><td>+03:00</td></tr><tr><td>Europe/Stockholm</td><td>+02:00</td></tr><tr><td>Europe/Tallinn</td><td>+03:00</td></tr><tr><td>Europe/Tirane</td><td>+02:00</td></tr><tr><td>Europe/Tiraspol</td><td>+03:00</td></tr><tr><td>Europe/Ulyanovsk</td><td>+04:00</td></tr><tr><td>Europe/Uzhgorod</td><td>+03:00</td></tr><tr><td>Europe/Vaduz</td><td>+02:00</td></tr><tr><td>Europe/Vatican</td><td>+02:00</td></tr><tr><td>Europe/Vienna</td><td>+02:00</td></tr><tr><td>Europe/Vilnius</td><td>+03:00</td></tr><tr><td>Europe/Volgograd</td><td>+04:00</td></tr><tr><td>Europe/Warsaw</td><td>+02:00</td></tr><tr><td>Europe/Zagreb</td><td>+02:00</td></tr><tr><td>Europe/Zaporozhye</td><td>+03:00</td></tr><tr><td>Europe/Zurich</td><td>+02:00</td></tr><tr><td>GB</td><td>+01:00</td></tr><tr><td>GB-Eire</td><td>+01:00</td></tr><tr><td>GMT</td><td>00:00</td></tr><tr><td>GMT0</td><td>00:00</td></tr><tr><td>Greenwich</td><td>00:00</td></tr><tr><td>Hongkong</td><td>+08:00</td></tr><tr><td>Iceland</td><td>00:00</td></tr><tr><td>Indian/Antananarivo</td><td>+03:00</td></tr><tr><td>Indian/Chagos</td><td>+06:00</td></tr><tr><td>Indian/Christmas</td><td>+07:00</td></tr><tr><td>Indian/Cocos</td><td>+06:30</td></tr><tr><td>Indian/Comoro</td><td>+03:00</td></tr><tr><td>Indian/Kerguelen</td><td>+05:00</td></tr><tr><td>Indian/Mahe</td><td>+04:00</td></tr><tr><td>Indian/Maldives</td><td>+05:00</td></tr><tr><td>Indian/Mauritius</td><td>+04:00</td></tr><tr><td>Indian/Mayotte</td><td>+03:00</td></tr><tr><td>Indian/Reunion</td><td>+04:00</td></tr><tr><td>Iran</td><td>+04:30</td></tr><tr><td>Israel</td><td>+03:00</td></tr><tr><td>Jamaica</td><td>-05:00</td></tr><tr><td>Japan</td><td>+09:00</td></tr><tr><td>Kwajalein</td><td>+12:00</td></tr><tr><td>Libya</td><td>+02:00</td></tr><tr><td>MET</td><td>+02:00</td></tr><tr><td>MST7MDT</td><td>-06:00</td></tr><tr><td>Mexico/BajaNorte</td><td>-07:00</td></tr><tr><td>Mexico/BajaSur</td><td>-06:00</td></tr><tr><td>Mexico/General</td><td>-05:00</td></tr><tr><td>NZ</td><td>+12:00</td></tr><tr><td>NZ-CHAT</td><td>+12:45</td></tr><tr><td>Navajo</td><td>-06:00</td></tr><tr><td>PRC</td><td>+08:00</td></tr><tr><td>PST8PDT</td><td>-07:00</td></tr><tr><td>Pacific/Apia</td><td>+13:00</td></tr><tr><td>Pacific/Auckland</td><td>+12:00</td></tr><tr><td>Pacific/Bougainville</td><td>+11:00</td></tr><tr><td>Pacific/Chatham</td><td>+12:45</td></tr><tr><td>Pacific/Chuuk</td><td>+10:00</td></tr><tr><td>Pacific/Easter</td><td>-06:00</td></tr><tr><td>Pacific/Efate</td><td>+11:00</td></tr><tr><td>Pacific/Enderbury</td><td>+13:00</td></tr><tr><td>Pacific/Fakaofo</td><td>+13:00</td></tr><tr><td>Pacific/Fiji</td><td>+12:00</td></tr><tr><td>Pacific/Funafuti</td><td>+12:00</td></tr><tr><td>Pacific/Galapagos</td><td>-06:00</td></tr><tr><td>Pacific/Gambier</td><td>-09:00</td></tr><tr><td>Pacific/Guadalcanal</td><td>+11:00</td></tr><tr><td>Pacific/Guam</td><td>+10:00</td></tr><tr><td>Pacific/Honolulu</td><td>-10:00</td></tr><tr><td>Pacific/Johnston</td><td>-10:00</td></tr><tr><td>Pacific/Kiritimati</td><td>+14:00</td></tr><tr><td>Pacific/Kosrae</td><td>+11:00</td></tr><tr><td>Pacific/Kwajalein</td><td>+12:00</td></tr><tr><td>Pacific/Majuro</td><td>+12:00</td></tr><tr><td>Pacific/Marquesas</td><td>-09:30</td></tr><tr><td>Pacific/Midway</td><td>-11:00</td></tr><tr><td>Pacific/Nauru</td><td>+12:00</td></tr><tr><td>Pacific/Niue</td><td>-11:00</td></tr><tr><td>Pacific/Norfolk</td><td>+11:00</td></tr><tr><td>Pacific/Noumea</td><td>+11:00</td></tr><tr><td>Pacific/Pago_Pago</td><td>-11:00</td></tr><tr><td>Pacific/Palau</td><td>+09:00</td></tr><tr><td>Pacific/Pitcairn</td><td>-08:00</td></tr><tr><td>Pacific/Pohnpei</td><td>+11:00</td></tr><tr><td>Pacific/Ponape</td><td>+11:00</td></tr><tr><td>Pacific/Port_Moresby</td><td>+10:00</td></tr><tr><td>Pacific/Rarotonga</td><td>-10:00</td></tr><tr><td>Pacific/Saipan</td><td>+10:00</td></tr><tr><td>Pacific/Samoa</td><td>-11:00</td></tr><tr><td>Pacific/Tahiti</td><td>-10:00</td></tr><tr><td>Pacific/Tarawa</td><td>+12:00</td></tr><tr><td>Pacific/Tongatapu</td><td>+13:00</td></tr><tr><td>Pacific/Truk</td><td>+10:00</td></tr><tr><td>Pacific/Wake</td><td>+12:00</td></tr><tr><td>Pacific/Wallis</td><td>+12:00</td></tr><tr><td>Pacific/Yap</td><td>+10:00</td></tr><tr><td>Poland</td><td>+02:00</td></tr><tr><td>Portugal</td><td>+01:00</td></tr><tr><td>ROK</td><td>+09:00</td></tr><tr><td>Singapore</td><td>+08:00</td></tr><tr><td>SystemV/AST4</td><td>-04:00</td></tr><tr><td>SystemV/AST4ADT</td><td>-04:00</td></tr><tr><td>SystemV/CST6</td><td>-06:00</td></tr><tr><td>SystemV/CST6CDT</td><td>-06:00</td></tr><tr><td>SystemV/EST5</td><td>-05:00</td></tr><tr><td>SystemV/EST5EDT</td><td>-05:00</td></tr><tr><td>SystemV/HST10</td><td>-10:00</td></tr><tr><td>SystemV/MST7</td><td>-07:00</td></tr><tr><td>SystemV/MST7MDT</td><td>-07:00</td></tr><tr><td>SystemV/PST8</td><td>-08:00</td></tr><tr><td>SystemV/PST8PDT</td><td>-08:00</td></tr><tr><td>SystemV/YST9</td><td>-09:00</td></tr><tr><td>SystemV/YST9YDT</td><td>-09:00</td></tr><tr><td>Turkey</td><td>+03:00</td></tr><tr><td>UCT</td><td>00:00</td></tr><tr><td>US/Alaska</td><td>-08:00</td></tr><tr><td>US/Aleutian</td><td>-09:00</td></tr><tr><td>US/Arizona</td><td>-07:00</td></tr><tr><td>US/Central</td><td>-05:00</td></tr><tr><td>US/East-Indiana</td><td>-04:00</td></tr><tr><td>US/Eastern</td><td>-04:00</td></tr><tr><td>US/Hawaii</td><td>-10:00</td></tr><tr><td>US/Indiana-Starke</td><td>-05:00</td></tr><tr><td>US/Michigan</td><td>-04:00</td></tr><tr><td>US/Mountain</td><td>-06:00</td></tr><tr><td>US/Pacific</td><td>-07:00</td></tr><tr><td>US/Pacific-New</td><td>-07:00</td></tr><tr><td>US/Samoa</td><td>-11:00</td></tr><tr><td>UTC</td><td>00:00</td></tr><tr><td>Universal</td><td>00:00</td></tr><tr><td>W-SU</td><td>+03:00</td></tr><tr><td>WET</td><td>+01:00</td></tr><tr><td>Zulu</td><td>00:00</td></tr><tr><td>EST</td><td>-05:00</td></tr><tr><td>HST</td><td>-10:00</td></tr><tr><td>MST</td><td>-07:00</td></tr><tr><td>ACT</td><td>+09:30</td></tr><tr><td>AET</td><td>+10:00</td></tr><tr><td>AGT</td><td>-03:00</td></tr><tr><td>ART</td><td>+02:00</td></tr><tr><td>AST</td><td>-08:00</td></tr><tr><td>BET</td><td>-03:00</td></tr><tr><td>BST</td><td>+06:00</td></tr><tr><td>CAT</td><td>+02:00</td></tr><tr><td>CNT</td><td>-02:30</td></tr><tr><td>CST</td><td>-05:00</td></tr><tr><td>CTT</td><td>+08:00</td></tr><tr><td>EAT</td><td>+03:00</td></tr><tr><td>ECT</td><td>+02:00</td></tr><tr><td>IET</td><td>-04:00</td></tr><tr><td>IST</td><td>+05:30</td></tr><tr><td>JST</td><td>+09:00</td></tr><tr><td>MIT</td><td>+13:00</td></tr><tr><td>NET</td><td>+04:00</td></tr><tr><td>NST</td><td>+12:00</td></tr><tr><td>PLT</td><td>+05:00</td></tr><tr><td>PNT</td><td>-07:00</td></tr><tr><td>PRT</td><td>-04:00</td></tr><tr><td>PST</td><td>-07:00</td></tr><tr><td>SST</td><td>+11:00</td></tr><tr><td>VST</td><td>+07:00</td></tr></tbdoy></table></div></div>'
+paths:
+  '/api/1/products/{product-token}':
+    get:
+      tags:
+        - Products
+      summary: 'Get Product '
+      description: Gets a single product by Product Token.
+      operationId: GetProduct
+      parameters:
+        - name: product-token
+          in: path
+          description: Unique identifier for a product
+          required: true
+          schema:
+            type: string
+          example: 4798D23B46E4AFC5D568
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /api/1/products:
+    get:
+      tags:
+        - Products
+      summary: Get Products
+      description: Gets all products available within your Insight Account.
+      operationId: CustomerProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  '/api/1/products/{product-token}/users':
+    get:
+      tags:
+        - Products
+      summary: Get Users For Product
+      description: Gets all users that have access to a product
+      operationId: getGetUsersForProduct
+      parameters:
+        - name: product-token
+          in: path
+          description: Unique identifier for a product
+          required: true
+          schema:
+            type: string
+          example: 4798D23B46E4AFC5D568
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /api/1/roles:
+    get:
+      tags:
+        - Roles
+      summary: Get Roles
+      description: <p>Gets roles available within your Insight Account. These roles can be given to a user to grant access within the products. The <code>supported_products</code> section lists all products that a certain role applies to.
+      operationId: getCustomerRoles
+      parameters:
+        - name: product-code
+          in: query
+          description: 'Optional parameter to filter results based on supported <a href="#tag/productCodeList">product codes</a>.'
+          required: false
+          schema:
+            type: string
+          example: IDR
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleWithSupportedProducts'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  '/api/1/roles/{role-id}':
+    get:
+      tags:
+        - Roles
+      summary: Get Role
+      description: 'Gets a Role for a customer based on the Role Id provided.<br>A role provides access to various product features and can be given to users. '
+      operationId: getRole
+      parameters:
+        - name: role-id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 42b1-95419e54-136e-4311-9944-67c79ebddda9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/RoleWithSupportedProducts'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  '/api/1/users/{user-id}':
+    get:
+      tags:
+        - Users
+      summary: Get User
+      description: Gets a user based on the User Id provided.
+      operationId: getUser
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+    delete:
+      tags:
+        - Users
+      summary: Delete User
+      description: 'Deletes a user from your Insight Account including any resource access they have.<br><ul><li>Native users will be removed completely from your Insight Account and can be added again as a new user</li><li>Externally authorized users will be removed from your Insight Account. To re-gain access to your Insight Account a new access request will need to be issued and approved</li><li>Federated users will be removed from Insight Account, but if they are still assigned to the Insight Platform through your IdP they will  be able to re-gain access to your Insight Platform account until their access is removed via your IDP</li></ul>'
+      operationId: deleteUser
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Action Conflict
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+    patch:
+      tags:
+        - Users
+      summary: Update user
+      description: 'Partial request to update a user''s profile attributes such as first name, last name and timezone.<br>The request accepts a single attribute as well as any combination of attributes. Only user attributes included in the request will be updated. All other user attributes will remain unchanged. A list of valid timezones can be found under <a href="#tag/timezones">Additional Information</a>.<br><br>You cannot change the Platform Administrator status of the user associated to the API Key making the request as that would invalidate the API key.<br><p><a href="#tag/externallyAuthorizedUsers">Externally Authorized Users</a>: Only the Platform Administrator status of these users can be updated, as that is in relation to access within your Insight Account. Attempting to update additional attributes that belong to the user such as "first_name" will result in a 403 error. </p>'
+      operationId: updateUser
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update User Request
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+        required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Action Conflict
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '422':
+          description: Resource Validation Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  '/api/1/users/{user-id}/roles':
+    get:
+      tags:
+        - Users
+      summary: Get User Roles
+      description: 'Gets a list of roles for a given user.<br><br>For more information on Roles, please see the <a href="#tag/roles">Roles API section.</a><br>'
+      operationId: getUserRoles
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRole'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+    post:
+      tags:
+        - Users
+      summary: Add User Role
+      description: 'Adds one or more roles for a user.<br/>The request may not have more than one Role for the same Organization otherwise it gets rejected.  If the list of Role Ids provided is empty, the request will be rejected. <br>To get a list of available roles within your Insight Account to chose from please see this <a href="#operation/getCustomerRoles">Roles API</a>. <br><br>For more information about roles see <a href="#tag/Roles">Roles section</a>. '
+      operationId: addUserRole
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'The request body is an array of strings, with each element representing the Id of the Role which will be assigned to the User. <br><br>'
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: array
+              items:
+                type: string
+                example: 88a7b240-2c2e-4202-918e-8167e7c29283
+        required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRole'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Action Conflict
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '422':
+          description: Resource Validation Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  '/api/1/users/{user-id}/products/{product-token}':
+    put:
+      tags:
+        - Users
+      summary: Add User To Product
+      description: 'Adds a user to a product.<br>It is advised to ensure users are given the right product access by <a href="#operation/addUserRole">assigning the user to a suitable role</a>. If a user does not have an existing Role when being added to a product a default <code>Read Only</code> Role will be applied. Roles can be updated at any point after a user has been assigned to product. For more information about Roles see <a href="#tag/Roles">Roles section</a>.'
+      operationId: addUserToOrgProduct
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: product-token
+          in: path
+          description: Unique identifier for the product
+          required: true
+          schema:
+            type: string
+          example: 4798D23B46E4AFC5D568
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Action Conflict
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '422':
+          description: Resource Validation Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+    delete:
+      tags:
+        - Users
+      summary: Remove User From Product
+      description: Removes a user's access to a Product.<br>The user will be redirected to your Insight Account main page when trying to access a product that they have been removed from.
+      operationId: deleteUserFromOrgProduct
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: product-token
+          in: path
+          description: Unique identifier for the product
+          required: true
+          schema:
+            type: string
+          example: 4798D23B46E4AFC5D568
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Action Conflict
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  /api/1/users:
+    get:
+      tags:
+        - Users
+      summary: Get Users
+      description: '<p>Gets users for within your Insight Account based on the provided query params.<br>Pagination is not supported on this API because of the underlying data sources.<br>Please see below sections for more information on: </p><ul><li><a href="#tag/externallyAuthorizedUsers">Externally authorized users</a></li> <li><a href="#tag/federatedUsers">Federated users</a></li> <li><a href="#tag/accountStatuses">User Account Statuses</a></li> <li><a href="#tag/timezones">Timezones</a></li><p></p></ul>'
+      operationId: getUsers
+      parameters:
+        - name: status
+          in: query
+          description: 'Optional parameter to filter results with specific user <a href="#tag/accountStatuses">account status</a>'
+          required: false
+          schema:
+            type: string
+          example: ACTIVE
+        - name: platform-admin
+          in: query
+          description: Optional parameter to filter results based on platform admin status
+          required: false
+          schema:
+            type: boolean
+        - name: email
+          in: query
+          description: Optional parameter to filter results based on email.<br>Partial match supported.
+          required: false
+          schema:
+            type: string
+          example: jSmith@email.com
+        - name: first_name
+          in: query
+          description: Optional parameter to filter results based on first name.<br>Partial match supported
+          required: false
+          schema:
+            type: string
+          example: John
+        - name: last_name
+          in: query
+          description: Optional parameter to filter results based on last name.<br>Partial match supported
+          required: false
+          schema:
+            type: string
+          example: Smith
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+    post:
+      tags:
+        - Users
+      summary: Create User
+      description: 'Creates a Native User within your Insight Account. <br>If no platform_admin flag is specified, a default value <code>false</code> will be applied.<br>If no timezone is provided a default value of <code>UTC</code> will be applied.<br>A list of valid timezones can be found under <a href="#tag/timezones">Additional Information</a>.<br><br>When a user is created, their <a href="#tag/accountStatuses">Account Status</a> initially is <code>STAGED</code>. That means they need to activate their account before they can access your Insight Account and its products. <br>On user creation users will receive an email with a link to activate their account. This link will expire after 7 days and can be resent by a Platform Administrator or requested again by the user. <br><br>After creating a user you may also want to <a href="#operation/addUserToOrgProduct">grant the user access to products</a> and <a href="#operation/addUserRole">assign a suitable role</a>.<br><br><b>Note: </b>If you have configured your Insight Account to use your own Identity Provider (IdP), you will not be able to add new users through the API or UI. New users will have to be granted access through your IdP see section <a href="#tag/federatedUsers">Federated users</a>.<br>'
+      operationId: createUser
+      requestBody:
+        description: Create User Request
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '409':
+          description: Action Conflict
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '422':
+          description: Resource Validation Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+  '/api/1/users/{user-id}/products':
+    get:
+      tags:
+        - Users
+      summary: Get Products for User
+      description: Gets all products assigned to a user.
+      operationId: getUserProducts
+      parameters:
+        - name: user-id
+          in: path
+          description: Unique identifier for the user
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '403':
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '404':
+          description: Resource Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        product_token:
+          type: string
+          description: Unique identifier for the product
+          readOnly: true
+          example: 4798D23B46E4AFC5D568
+        product_code:
+          type: string
+          description: Static product code to map to a Product name
+          readOnly: true
+          example: IDR
+        organization_id:
+          type: string
+          description: Unique Identifier for the organization to which the product is associated with
+          format: uuid
+          readOnly: true
+          example: 88a7b240-2c2e-4202-918e-8167e7c29283
+        organization_name:
+          type: string
+          description: Name of the organization
+          readOnly: true
+          example: Acme EU
+    ErrorResponseBody:
+      type: object
+      properties:
+        code:
+          type: string
+          readOnly: true
+          example: INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          readOnly: true
+          example: The request could not be served due to an unexpected error.
+        correlation_id:
+          type: string
+          readOnly: true
+          example: d8b70e55-3f40-41d0-9df9-b907577f1504
+      description: ErrorResponseBody
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the user
+          format: uuid
+          example: 7e8b76ba-086b-40f3-ab96-3a7a7d48e34a
+        email:
+          title: Read Only
+          type: string
+          description: The email address of the user
+          example: jSmith@email.com
+        first_name:
+          type: string
+          description: The firstname of the user
+          writeOnly: true
+          example: James
+        last_name:
+          type: string
+          description: The lastname of the user
+          writeOnly: true
+          example: Smith
+        timezone:
+          type: string
+          description: 'The preferred <a href="#tag/timezones">timezone</a> of the user'
+          example: UTC
+        status:
+          type: string
+          description: 'The current <a href="#tag/accountStatuses">Account Status</a> of the user'
+          enum:
+            - ACTIVE
+            - LOCKED_OUT
+            - PASSWORD_EXPIRED
+            - RECOVERY
+            - STAGED
+        platform_admin:
+          type: boolean
+          description: Flag that indicates whether a user is a Platform Administrator or a normal user
+          readOnly: true
+        external_authorized:
+          title: Read Only
+          type: boolean
+          description: 'Flag that indicates whether a user is an <a href="#tag/externallyAuthorizedUsers">externally authorized</a> user or not'
+          readOnly: true
+        federated:
+          title: Read Only
+          type: boolean
+          description: 'Flag that indicates whether this user has access to your Insight Account via an <a href="#tag/federatedUsers">external Identity Provider (IdP)</a> or not'
+        last_login:
+          title: Read Only
+          type: string
+          description: 'Last login timestamp of the user. An ISO formatted date, with time expressed in UTC. <code>Null</code> if the user has never logged in.'
+          readOnly: true
+          example: '2019-11-14T16:23:46.000Z'
+    RoleWithSupportedProducts:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the role
+          example: 88a7b240-2c2e-4202-918e-8167e7c29283
+        name:
+          type: string
+          description: The name of the role
+          example: Admin
+        description:
+          type: string
+          description: A description detailing what the role does
+          example: Provides user with Admin Permissions for all products in a single organization
+        organization_id:
+          title: 'Optional: Only returned for organization roles'
+          type: string
+          description: The ID of the organization that the role is associated with. All organization roles will include an organization Id
+          format: uuid
+          readOnly: true
+          example: 88a7b240-2c2e-4202-918e-8167e7c29283
+        supported_products:
+          type: array
+          description: The products that can be affected by this role
+          format: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Product'
+    UpdateUserRequest:
+      type: object
+      properties:
+        first_name:
+          minLength: 1
+          type: string
+          description: The firstname of the user
+          writeOnly: true
+          example: James
+        last_name:
+          minLength: 1
+          type: string
+          description: The lastname of the user
+          writeOnly: true
+          example: Smith
+        timezone:
+          type: string
+          description: 'The preferred <a href="#tag/timezones">timezone</a> of the user'
+          example: UTC
+        platform_admin:
+          type: boolean
+          description: Flag that indicates whether a user is a Platform Administrator or a normal user
+          writeOnly: true
+    UserRole:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the role
+          example: 88a7b240-2c2e-4202-918e-8167e7c29283
+        name:
+          type: string
+          description: The name of the role
+          example: Admin
+        description:
+          title: Optional
+          type: string
+          description: A description detailing what the role does
+          example: Provides user with Admin Permissions for all products in a single organization
+        organization_id:
+          title: 'Optional: Only returned for organization roles'
+          type: string
+          description: The ID of the organization that the role is associated with. All organization roles will include an organization Id
+          format: uuid
+          readOnly: true
+          example: 88a7b240-2c2e-4202-918e-8167e7c29283
+    CreateUserRequest:
+      required:
+        - email
+        - first_name
+        - last_name
+      type: object
+      properties:
+        email:
+          type: string
+          description: The email address of the user
+          example: jSmith@email.com
+        first_name:
+          type: string
+          description: The firstname of the user
+          writeOnly: true
+          example: John
+        last_name:
+          type: string
+          description: The lastname of the user
+          writeOnly: true
+          example: Smith
+        platform_admin:
+          type: boolean
+          description: Flag that indicates whether a user is a Platform Administrator or a normal user
+          writeOnly: true
+          default: false
+        timezone:
+          type: string
+          description: 'The preferred <a href="#tag/timezones">timezone</a> of the user'
+          example: UTC
+          default: UTC
