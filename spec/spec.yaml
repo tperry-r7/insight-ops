@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: InsightOps API
   version: ''
-  description: "With this API, you can programmatically query your log data or interact with resources, such as logs, alerts, or saved queries.\n\n# Prerequisites\n\n* [Obtain an API Key](https://insight.help.rapid7.com/docs/managing-platform-api-keys)\n* Review Supported Regions\n* Review Rate Limiting\n\n\n# Supported Regions\n\nRapid7 Supported the following regions:\n* US: United States:\n* EU: Europe\n* CA: Canada\n* AU: Australia\n* AP: Japan\n\nYour request URI will vary depending on the region you are in. \n\n`https://{region}.api.insight.rapid7.com`\n\n# Rate Limits\n# Authentication\nThe InsightOps API uses a `x-api-key` that is passed as a key / value pair in the header. To get a API key see, [Managing Platform API Keys](https://insight.help.rapid7.com/docs/managing-platform-api-keys).\n\nEach endpoint has the minum amount of access needed.\n**Authentication**\n - Owner\n - Read Write\n - Read Only"
+  description: "You can use the InsightOps API to automate common tasks by creating your own scripts to execute from the command line without needing to access the user interface. With the API, you can programmatically query your log data or interact with resources, such as logs, alerts, or saved queries.\n\nYou can perform the following actions with the API\n\n* API Keys - The API key resource allows you to interact with your keys in the account.\n* Query API - The Query API lets you perform LEQL queries through an API interface in the same manner that you would in the UI.\n* Saved Queries\n* Tags\n* Labels\n* Logs\n* Logsets\n\n\n# Customers\nIf you are an InsightOps customer, you will belong to one of these categories:\n\n* Migrated customers\n* Non migrated\n* New customers\n\nThe category you belong to will determine your API base path and API keys. \n\n## Migrated customers\n\nMigrated customers can use your \nIn case you are migrated, you can use old keys (read write /read only) or platform keys.\nIn case you use old keys, your API(base)is without log_search.\n\nE.g. https://us.rest.logs.insight.rapid7.com/\n\nfor the platform keys:\nhttps://us.api.insight.rapid7.com/log_search/\n\n\n## Non migrated customers\n\n## New customers\n\n# Prerequisites\n\n* [Obtain an API Key](https://insight.help.rapid7.com/docs/managing-platform-api-keys)\n* Review Supported Regions\n* Review Rate Limiting\n\n\n# Supported Regions\n\nRapid7 Supported the following regions:\n* US: United States:\n* EU: Europe\n* CA: Canada\n* AU: Australia\n* AP: Japan\n\nYour request URI will vary depending on the region you are in. \n\n`https://{region}.api.insight.rapid7.com`\n\n# Rate Limits\n\n# Authentication\nThe InsightOps API uses a `x-api-key` that is passed as a key / value pair in the header. To get a API key see, [Managing Platform API Keys](https://insight.help.rapid7.com/docs/managing-platform-api-keys).\n\nEach endpoint has the minum amount of access needed.\n**Authentication**\n - Owner\n - Read Write\n - Read Only"
 servers:
   - url: 'https://us.rest.logs.insight.rapid7.com'
     description: United States
@@ -247,7 +247,7 @@ paths:
         name: query_id
         in: path
         required: true
-  '/query/logs':
+  /query/logs:
     post:
       summary: Query Log Entries
       tags:
@@ -309,7 +309,7 @@ paths:
                       to: 1432090000000
                     statement: 'where(/.*/)'
     parameters: []
-  '/query/saved_queries':
+  /query/saved_queries:
     get:
       summary: Get Saved Queries
       tags:
@@ -650,7 +650,7 @@ paths:
                       - id: 3358b7ee-9238-4181-ab80-afb026f38081
                     type: Alert
         description: ''
-  '/management/tags':
+  /management/tags:
     get:
       summary: Get All Tags
       tags:
@@ -937,7 +937,7 @@ paths:
                       name: DemoTag-Last 20min
                       color: 0000cc
                       reserved: false
-  '/management/labels':
+  /management/labels:
     get:
       summary: Get All Labels
       responses:
@@ -1112,7 +1112,7 @@ paths:
          - Read Only
       tags:
         - Logs
-  '/management/logs':
+  /management/logs:
     get:
       summary: Get All Logs
       tags:
