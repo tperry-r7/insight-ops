@@ -1052,7 +1052,6 @@ paths:
 
 
 
-
     put:
       summary: Update a Log
       operationId: put-management-logs-logId
@@ -2040,17 +2039,7 @@ components:
         - Saved Queries
     Create-Saved-Query:
       type: object
-      x-examples:
-        Create Saved Query:
-          saved_query:
-            logs: []
-            leql:
-              during:
-                to: null
-                from: 1450557004000
-                time_range: 1460557604000
-              statement: where(foo=bar)
-            name: MySearch
+      x-examples: {}
       title: ''
       properties:
         saved_query:
@@ -2100,18 +2089,7 @@ components:
     Create-Saved-Query-Response:
       title: ''
       type: object
-      x-examples:
-        Create Saved Query Response:
-          saved_query:
-            id: 00000000-0001-bd8a-0000-000000000000
-            logs: []
-            leql:
-              during:
-                to: null
-                from: null
-                time_range: null
-              statement: where(foo=bar)
-            name: MySearch
+      x-examples: {}
       properties:
         saved_query:
           type: object
@@ -3043,6 +3021,17 @@ components:
           links:
             - rel: self
               href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
+    links:
+      type: array
+      items:
+        type: object
+        properties:
+          rel:
+            type: string
+          href:
+            type: string
+      x-examples:
+        example-1: {}
   securitySchemes:
     x-api-key:
       name: x-api-key
