@@ -367,18 +367,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Create-Saved-Query-Response'
               examples:
-                Create Saved Query Example:
+                Create Saved Query Response:
                   value:
                     saved_query:
-                      id: ''
-                      logs: []
+                      id: 00000000-0003-541f-0000-000000000000
+                      name: MySearch
                       leql:
+                        statement: where(foo=bar)
                         during:
+                          time_range: Last 30 days
                           to: 1450557604000
                           from: 1450557604000
-                          time_range: Today
-                        statement: where(foo=bar)
-                      name: MySearch
+                      logs: []
         '400':
           description: |-
             Bad Request
@@ -391,6 +391,23 @@ paths:
         **Authentication**
         * Owner
         * Read Write
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Create-Saved-Query'
+            examples:
+              Create Saved Query Example:
+                value:
+                  saved_query:
+                    logs: []
+                    leql:
+                      during:
+                        to: 1450557604000
+                        from: 1450557604000
+                        time_range: Last 30 days
+                      statement: where(foo=bar)
+                    name: MySearch
     put:
       summary: Update a saved query
       tags:
@@ -2041,15 +2058,15 @@ components:
         - Saved Queries
     Create-Saved-Query:
       type: object
-      x-examples: {}
-      title: ''
+      title: Create-Saved-Query
+      x-tags:
+        - Saved Queries
       properties:
         saved_query:
           type: object
           properties:
             logs:
               type: array
-              description: Array of log keys
               items:
                 type: object
             leql:
@@ -2057,195 +2074,701 @@ components:
               properties:
                 during:
                   type: object
-                  statement:
-                    type: string
-                    description: A valid LEQL query
-                    example: where(foo=bar)
                   properties:
                     to:
                       type: integer
-                      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds.'
-                      example: 1460557604000
                     from:
                       type: integer
-                      description: "Lower bound of the time range you want to query against.\nFormat: UNIX timestamp in milliseconds\t"
-                      example: 1450557604000
                     time_range:
                       type: string
-                      example: Last 4 Days
-                      description: Your events over a period of time
                 statement:
                   type: string
-                  example: where(foo=bar)
-                  description: "A valid LEQL query to run against the log\t"
               required:
                 - statement
-        name:
-          type: string
-          description: Name of the search
-          example: december-2019
-      required:
-        - name
-      x-tags:
-        - Saved Queries
-    Create-Saved-Query-Response:
-      title: ''
-      type: object
-      x-examples: {}
-      properties:
-        saved_query:
-          type: object
-          properties:
-            logs:
-              type: array
-              description: Array of log keys
-              items:
-                type: object
-            leql:
-              type: object
-              properties:
-                during:
-                  type: object
-                  statement:
-                    type: string
-                    description: A valid LEQL query
-                    example: where(foo=bar)
-                  properties:
-                    to:
-                      type: integer
-                      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds'
-                      example: 1460557604000
-                    from:
-                      type: integer
-                      description: "Lower bound of the time range you want to query against.\nFormat: UNIX timestamp in milliseconds\t"
-                      example: 1450557604000
-                    time_range:
-                      type: string
-                      example: Last 4 Days
-                      description: Your events over a period of time
-                statement:
-                  type: string
-                  example: where(foo=bar)
-                  description: "A valid LEQL query to run against the log\t"
-        name:
-          type: string
-          description: Name of the search
-          example: december-2019
-        id:
-          type: string
-          example: 00000000-0001-bd8a-0000-000000000000
-          description: ID of the saved query
-      description: ''
-      x-tags:
-        - Saved Queries
-    Tag-Response:
-      title: Tag-Model
-      properties:
-        tag:
-          type: object
-          properties:
-            type:
-              type: string
-            id:
-              type: string
             name:
               type: string
-            sources:
-              type: array
-              items:
+          required:
+            - name
+      x-examples:
+        Create Saved Query Example:
+          saved_query:
+            logs: []
+            leql:
+              during:
+                to: 1450557604000
+                from: 1450557604000
+                time_range: Last 30 days
+              statement: where(foo=bar)
+            name: MySearch
+    Long-Running-Query-Response:
+      title: Long-Running-Query-Response
+      type: object
+      x-tags:
+        - Query
+      properties:
+        logs:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        progress:
+          type: integer
+        query:
+          type: object
+          properties:
+            statement:
+              type: string
+            during:
+              type: object
+              properties:
+                to:
+                  type: integer
+                from:
+                  type: integer
+      x-examples:
+        Long Running Query Example:
+          logs:
+            - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+          id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
+          progress: 0
+          query:
+            statement: 'where(foo) calculate(count:x)'
+            during:
+              to: 100000
+              from: 100
+          links:
+            - rel: self
+              href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
+    Successful-Query-Started-Not-Finished:
+      title: Successful-Query-Started-Not-Finished
+      type: object
+      x-tags:
+        - Query
+      x-examples:
+        Started Not Finished:
+          logs:
+            - b7b33bce-58f1-42db-a36a-f452aa240d73
+          progress: 0
+          events: []
+          links:
+            - rel: Self
+              href: 'https://eu.api.insight.rapid7.com/log_search/query/5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:?log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&query=where%28http.status%29&time_range=Last+30+Days'
+          id: '5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:'
+          leql:
+            statement: where(http.status)
+            during:
+              from: 1583006834768
+              to: 1585598834768
+              time_range: Last 30 Days
+      description: HTTP 202 for a query that successfully started but has not yet finished
+      properties:
+        logs:
+          type: array
+          items:
+            type: string
+        progress:
+          type: integer
+        events:
+          type: array
+          items:
+            type: object
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              rel:
+                type: string
+              href:
+                type: string
+        id:
+          type: string
+        leql:
+          type: object
+          properties:
+            statement:
+              type: string
+            during:
+              type: object
+              properties:
+                from:
+                  type: integer
+                to:
+                  type: integer
+                time_range:
+                  type: string
+    API-Key:
+      title: API-Key
+      type: object
+      x-tags:
+        - API
+      properties:
+        apikeys:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: API key ID used in URL to get this resource.
+              api_key:
+                type: string
+                description: The actual API key.
+                example: xxxxxxxx-dca9-xxxx-ae4f-a5432fc3aafc
+              active:
+                type: boolean
+                description: True if the key still active (false if disabled)
+              expires:
+                type: string
+                description: Set when created and checked when authentication.
+              apilimits:
                 type: object
-            actions:
+                description: 'Consists of name:value pairs where name is management or query or any other api endpoint with a specific limit,'
+                properties:
+                  default:
+                    type: integer
+                  management:
+                    type: integer
+                  query:
+                    type: integer
+              acl_type:
+                type: string
+                description: 'Type of acl associated with this key - Owner, ReadWrite or ReadOnly.'
+                example: ReadOnly
+      x-examples:
+        API Key Example:
+          apikeys:
+            - id: 181c9a30-xxxx-4c7d-af1a-xxxxxxxxxxxx
+              api_key: "'00112233-4455-6677-8899-aabbccddeeff'"
+              acl_type: ReadOnly
+              apilimits:
+                default: 500
+                management: 1500
+                query: 1500
+              expires: null
+              active: true
+            - id: xxxxxxxx-0bd9-xxxx-8eaa-xxxxxxxxxxxx
+              api_key: xxxxxxxxx-fa82-xxxx-xxxx-b7db2c3fa542
+              acl_type: ReadWrite
+              apilimits:
+                default: 500
+                management: 1500
+                query: 1500
+              expires: null
+              active: true
+    Log-Usage:
+      title: Log-Usage
+      properties:
+        usage:
+          type: object
+          properties:
+            daily_usage:
               type: array
               items:
                 type: object
                 properties:
-                  id:
+                  usage:
                     type: string
-                  min_matches_count:
-                    type: integer
-                  min_report_count:
-                    type: integer
-                  min_matches_period:
+                  day:
                     type: string
-                  min_report_period:
+            id:
+              type: string
+            period:
+              type: object
+              properties:
+                to:
+                  type: string
+                from:
+                  type: string
+      type: object
+      x-examples:
+        Log Usage Example:
+          usage:
+            daily_usage:
+              - usage: '290349'
+                day: '2018-12-16'
+              - usage: '285438'
+                day: '2018-12-17'
+              - usage: '279626'
+                day: '2018-12-18'
+            id: '<Log Key>'
+            period:
+              to: '2018-12-18'
+              from: '2018-12-16'
+      description: ''
+    Account-Usage:
+      title: Account-Usage
+      properties:
+        daily_usage:
+          type: array
+          items:
+            type: object
+            properties:
+              usage:
+                type: integer
+              day:
+                type: string
+        period_usage:
+          type: integer
+        period:
+          type: object
+          properties:
+            to:
+              type: string
+            from:
+              type: string
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+      x-examples:
+        Account Usage: {}
+    Logs-Usage:
+      title: Logs-Usage
+      type: object
+      x-tags:
+        - Usage
+      properties:
+        per_day_usage:
+          type: object
+          properties:
+            usage:
+              type: array
+              items:
+                type: object
+                properties:
+                  interval:
                     type: string
-                  targets:
+                  log_usage:
                     type: array
                     items:
                       type: object
                       properties:
-                        id:
+                        usage:
                           type: integer
-                        type:
+                        id:
                           type: string
-                        params_set:
-                          type: object
-                          properties:
-                            direct:
-                              type: string
-                            teams:
-                              type: string
-                            users:
-                              type: string
-                        alert_content_set:
-                          type: object
-                  enabled:
-                    type: boolean
-                  type:
-                    type: string
-            patterns:
-              type: array
-              items:
-                type: string
-            labels:
+            period:
+              type: object
+              properties:
+                to:
+                  type: string
+                from:
+                  type: string
+            usage_units:
+              type: string
+            report_interval:
+              type: string
+      x-examples:
+        Logs Usage Example:
+          per_day_usage:
+            usage:
+              - interval: '2018-12-16'
+                log_usage:
+                  - usage: 8267539
+                    id: b2f37a6f-
+                  - usage: 9289532
+                    id: cec3450b-
+                  - usage: 12627779
+                    id: adc221c6-
+              - interval: '2018-12-17'
+                log_usage:
+                  - usage: 7648949
+                    id: 50499f85-
+                  - usage: 7764258
+                    id: b2f37a6f-
+              - interval: '2018-12-18'
+                log_usage:
+                  - usage: 8388395
+                    id: 50499f85-
+                  - usage: 8596388
+                    id: cec3450b-
+                  - usage: 12257438
+                    id: adc221c6-
+            period:
+              to: '2018-12-18'
+              from: '2018-12-16'
+            usage_units: bytes
+            report_interval: day
+    LogSet-Response:
+      title: Log Set-Response
+      type: object
+      x-tags:
+        - Logsets
+      x-examples:
+        LogSet Response:
+          logset:
+            id: 9fba111c-52c7-4235-9427-5114ef2d99ce
+            name: My Log Set
+            description: ''
+            user_data: {}
+            logs_info:
+              - id: 0868a0a4-a939-4a9c-9719-711f6d377021
+                name: My Log
+                links:
+                  - rel: Self
+                    href: 'https://us.rest.logs.insight.rapid7.com/management/logs/0868a0a4-a939-4a9c-9719-711f6d377021'
+      properties:
+        logset:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            user_data:
+              type: object
+            logs_info:
               type: array
               items:
                 type: object
                 properties:
                   id:
                     type: string
-                  sn:
-                    type: integer
                   name:
                     type: string
-                  color:
-                    type: string
-                  reserved:
-                    type: boolean
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rel:
+                          type: string
+                        href:
+                          type: string
+    Create-Logset:
+      title: Create-Logset
       type: object
-      x-examples:
-        Tag Model Example:
-          tag:
-            type: Alert
-            id: de305d54-75b4-431b-adb2-eb6b9e546014
-            name: Power Button Pressed
-            sources: []
-            actions:
-              - id: de305d54-75b4-431b-adb2-eb6b9e546014
-                min_matches_count: 1
-                min_report_count: 1
-                min_matches_period: Day
-                min_report_period: Day
-                targets:
-                  - id: 245ff892-ffed-4e99-9ee1-ab99fb20f2fc
-                    type: Mailto
-                    params_set:
-                      direct: user@example.com
-                      teams: ''
-                      users: user@example.com
-                    alert_content_set: {}
-                enabled: false
-                type: Alert
-            patterns:
-              - Power Button as
-            labels:
-              - id: de305d54-75b4-431b-adb2-eb6b9e546014
-                sn: 1056
-                name: Power Button
-                color: 007afb
-                reserved: false
       x-tags:
-        - Tags
+        - Logsets
+      x-examples:
+        Create Log Set Example:
+          logset:
+            name: MyLogSet2
+            logs_info:
+              - id: 63042c50-34a0-421a-aeef-7c313feb944c
+            user_data: {}
+      properties:
+        logset:
+          type: object
+          properties:
+            name:
+              type: string
+            logs_info:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+            user_data:
+              type: object
+    Logsets-Response:
+      title: Log Sets-Response
+      type: object
+      x-tags:
+        - Logsets
+      x-examples:
+        Logsets Response:
+          logsets:
+            - user_data: {}
+              logs_info:
+                - id: 4c1e08f2-0398-48a5-9325-ac190e2f79e8
+                  links:
+                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8'
+                      rel: Self
+                  name: My Log
+                - id: f15ad4cf-fe7d-4b7a-86b0-924997c1d8be
+                  links:
+                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logs/f15ad4cf-fe7d-4b7a-86b0-924997c1d8be'
+                      rel: Self
+                  name: My Other Log
+              description: ''
+              id: 814241d4-a14a-4c98-b059-b30978baf951
+              name: My LogSet
+            - user_data: {}
+              logs_info: []
+              description: ''
+              id: d25737e8-7135-4b48-b0f8-4b4b5b60b358
+              name: My Empty Log Set
+      properties:
+        logsets:
+          type: array
+          items:
+            type: object
+            properties:
+              user_data:
+                type: object
+              logs_info:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 4c1e08f2-0398-48a5-9325-ac190e2f79e8
+                    links:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            example: 'https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8'
+                          rel:
+                            type: string
+                            example: Self
+                    name:
+                      type: string
+                      example: Logset Data
+              description:
+                type: string
+              id:
+                type: string
+                example: 814241d4-a14a-4c98-b059-b30978baf951
+              name:
+                type: string
+                example: My Log Set
+      description: Returns a `logsets` array of multiple objects.
+    Update-a-Log:
+      title: Update-a-Log
+      x-examples:
+        Update a Log Example:
+          log:
+            logsets_info:
+              - id: 4e6dadf9-961e-48f4-82cf-452de78eb217
+                links:
+                  - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/4e6dadf9-961e-48f4-82cf-452de78eb217'
+                    rel: Self
+                name: ibtest
+            name: MyUpdatedLogName
+            user_data:
+              le_agent_filename: ''
+              le_agent_follow: 'false'
+            tokens:
+              - 856bd7f8-07b4-4cf2-889d-3ce0793ff76f
+            token_seed: null
+            structures: []
+      properties:
+        log:
+          type: object
+          properties:
+            logsets_info:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        href:
+                          type: string
+                        rel:
+                          type: string
+                  name:
+                    type: string
+            name:
+              type: string
+            user_data:
+              type: object
+              properties:
+                le_agent_filename:
+                  type: string
+                le_agent_follow:
+                  type: string
+            tokens:
+              type: array
+              items:
+                type: string
+            token_seed:
+              type: integer
+            structures:
+              type: array
+              items:
+                type: object
+      type: object
+      x-tags:
+        - Logs
+    Logs:
+      title: Logs
+      properties:
+        logs:
+          type: array
+          items:
+            type: object
+            properties:
+              logsets_info:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    links:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                          rel:
+                            type: string
+                    name:
+                      type: string
+              name:
+                type: string
+              user_data:
+                type: object
+                properties:
+                  le_agent_filename:
+                    type: string
+                  le_agent_follow:
+                    type: string
+              tokens:
+                type: array
+                items:
+                  type: string
+              source_type:
+                type: string
+              token_seed:
+                type: integer
+              structures:
+                type: array
+                items:
+                  type: object
+              id:
+                type: string
+      type: object
+      x-tags:
+        - Logs
+      x-examples:
+        Logs Example:
+          logs:
+            - logsets_info:
+                - id: ecca4c14-338d-4452-b842-5fca8c86b9cb
+                  links:
+                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/0f5e4d20-fef3-4b91-b4c2-c2573466bbdd'
+                      rel: Self
+                  name: MyLogSet
+              name: MyLog
+              user_data:
+                le_agent_filename: /var/log/anaconda.log
+                le_agent_follow: 'true'
+              tokens: []
+              source_type: AGENT
+              token_seed: null
+              structures: []
+              id: 4e6dadf9-961e-48f4-82cf-452de78eb217
+            - logsets_info:
+                - id: 7162e19e-3711-4f63-9833-d042f5c70f85
+                  links:
+                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/3aa5da13-3bb6-4457-ab6c-0d6b01ec892d'
+                      rel: Self
+                  name: MyOtherLogSet
+              name: MyOtherLog
+              user_data:
+                le_agent_filename: ''
+                le_agent_follow: 'false'
+              tokens:
+                - 70347838-87d8-43f7-82cc-fb6f63623893
+              source_type: TOKEN
+              token_seed: null
+              structures: []
+              id: 7a70d526-b69f-4030-904f-62dfd25d8d03
+      description: 'Returns multiple logs. '
+    Log-Response:
+      title: Log-Response
+      x-examples:
+        Logs Response Example:
+          log:
+            id: 113933b0-6b0c-4b96-830f-777071ccf470
+            name: R7-Log
+            tokens:
+              - aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
+            structures: []
+            user_data:
+              le_agent_filename: ''
+              le_agent_follow: 'false'
+            source_type: token
+            token_seed: null
+            retention_period: default
+            links:
+              - rel: Related
+                href: 'https://eu.api.insight.rapid7.com/log_search/management/logs/aaaaaaaa-bbbb-cccc-dddd-eeeeeeee/topkeys'
+            logsets_info:
+              - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
+                name: PHP_LogSet
+                links:
+                  - rel: Self
+                    href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
+              - id: 306c8474-05c9-4edd
+                name: CloudTrail_Logset
+                links:
+                  - rel: Self
+                    href: 'https://eu.api.insight.rapid7.com/log_search/management/logsets/306c8474-05c9-4edd'
+      type: object
+      description: ''
+      x-tags:
+        - Logs
+      properties:
+        log:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            tokens:
+              type: array
+              items:
+                type: string
+            structures:
+              type: array
+              items:
+                type: object
+            user_data:
+              type: object
+            source_type:
+              type: string
+            token_seed:
+              type: string
+            retention_period:
+              type: string
+            links:
+              type: array
+              items:
+                type: object
+                properties:
+                  rel:
+                    type: string
+                  href:
+                    type: string
+            logsets_info:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rel:
+                          type: string
+                        href:
+                          type: string
     Tag-Request-Model:
       title: Tag-Request-Model
       properties:
@@ -2354,675 +2877,147 @@ components:
             type: Alert
       x-tags:
         - Tags
-    Log-Response:
-      title: Log-Response
-      x-examples:
-        Logs Response Example:
-          log:
-            id: 113933b0-6b0c-4b96-830f-777071ccf470
-            name: R7-Log
-            tokens:
-              - aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
-            structures: []
-            user_data:
-              le_agent_filename: ''
-              le_agent_follow: 'false'
-            source_type: token
-            token_seed: null
-            retention_period: default
-            links:
-              - rel: Related
-                href: 'https://eu.api.insight.rapid7.com/log_search/management/logs/aaaaaaaa-bbbb-cccc-dddd-eeeeeeee/topkeys'
-            logsets_info:
-              - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
-                name: PHP_LogSet
-                links:
-                  - rel: Self
-                    href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
-              - id: 306c8474-05c9-4edd
-                name: CloudTrail_Logset
-                links:
-                  - rel: Self
-                    href: 'https://eu.api.insight.rapid7.com/log_search/management/logsets/306c8474-05c9-4edd'
-      type: object
-      description: ''
-      x-tags:
-        - Logs
+    Tag-Response:
+      title: Tag-Model
       properties:
-        log:
+        tag:
           type: object
           properties:
+            type:
+              type: string
             id:
               type: string
             name:
               type: string
-            tokens:
-              type: array
-              items:
-                type: string
-            structures:
+            sources:
               type: array
               items:
                 type: object
-            user_data:
-              type: object
-            source_type:
-              type: string
-            token_seed:
-              type: string
-            retention_period:
-              type: string
-            links:
-              type: array
-              items:
-                type: object
-                properties:
-                  rel:
-                    type: string
-                  href:
-                    type: string
-            logsets_info:
+            actions:
               type: array
               items:
                 type: object
                 properties:
                   id:
                     type: string
-                  name:
+                  min_matches_count:
+                    type: integer
+                  min_report_count:
+                    type: integer
+                  min_matches_period:
                     type: string
-                  links:
+                  min_report_period:
+                    type: string
+                  targets:
                     type: array
                     items:
                       type: object
                       properties:
-                        rel:
-                          type: string
-                        href:
-                          type: string
-    Logs:
-      title: Logs
-      properties:
-        logs:
-          type: array
-          items:
-            type: object
-            properties:
-              logsets_info:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    links:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          href:
-                            type: string
-                          rel:
-                            type: string
-                    name:
-                      type: string
-              name:
-                type: string
-              user_data:
-                type: object
-                properties:
-                  le_agent_filename:
-                    type: string
-                  le_agent_follow:
-                    type: string
-              tokens:
-                type: array
-                items:
-                  type: string
-              source_type:
-                type: string
-              token_seed:
-                type: integer
-              structures:
-                type: array
-                items:
-                  type: object
-              id:
-                type: string
-      type: object
-      x-tags:
-        - Logs
-      x-examples:
-        Logs Example:
-          logs:
-            - logsets_info:
-                - id: ecca4c14-338d-4452-b842-5fca8c86b9cb
-                  links:
-                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/0f5e4d20-fef3-4b91-b4c2-c2573466bbdd'
-                      rel: Self
-                  name: MyLogSet
-              name: MyLog
-              user_data:
-                le_agent_filename: /var/log/anaconda.log
-                le_agent_follow: 'true'
-              tokens: []
-              source_type: AGENT
-              token_seed: null
-              structures: []
-              id: 4e6dadf9-961e-48f4-82cf-452de78eb217
-            - logsets_info:
-                - id: 7162e19e-3711-4f63-9833-d042f5c70f85
-                  links:
-                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/3aa5da13-3bb6-4457-ab6c-0d6b01ec892d'
-                      rel: Self
-                  name: MyOtherLogSet
-              name: MyOtherLog
-              user_data:
-                le_agent_filename: ''
-                le_agent_follow: 'false'
-              tokens:
-                - 70347838-87d8-43f7-82cc-fb6f63623893
-              source_type: TOKEN
-              token_seed: null
-              structures: []
-              id: 7a70d526-b69f-4030-904f-62dfd25d8d03
-      description: 'Returns multiple logs. '
-    Update-a-Log:
-      title: Update-a-Log
-      x-examples:
-        Update a Log Example:
-          log:
-            logsets_info:
-              - id: 4e6dadf9-961e-48f4-82cf-452de78eb217
-                links:
-                  - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/4e6dadf9-961e-48f4-82cf-452de78eb217'
-                    rel: Self
-                name: ibtest
-            name: MyUpdatedLogName
-            user_data:
-              le_agent_filename: ''
-              le_agent_follow: 'false'
-            tokens:
-              - 856bd7f8-07b4-4cf2-889d-3ce0793ff76f
-            token_seed: null
-            structures: []
-      properties:
-        log:
-          type: object
-          properties:
-            logsets_info:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  links:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        href:
-                          type: string
-                        rel:
-                          type: string
-                  name:
-                    type: string
-            name:
-              type: string
-            user_data:
-              type: object
-              properties:
-                le_agent_filename:
-                  type: string
-                le_agent_follow:
-                  type: string
-            tokens:
-              type: array
-              items:
-                type: string
-            token_seed:
-              type: integer
-            structures:
-              type: array
-              items:
-                type: object
-      type: object
-      x-tags:
-        - Logs
-    Logsets-Response:
-      title: Log Sets-Response
-      type: object
-      x-tags:
-        - Logsets
-      x-examples:
-        Logsets Response:
-          logsets:
-            - user_data: {}
-              logs_info:
-                - id: 4c1e08f2-0398-48a5-9325-ac190e2f79e8
-                  links:
-                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8'
-                      rel: Self
-                  name: My Log
-                - id: f15ad4cf-fe7d-4b7a-86b0-924997c1d8be
-                  links:
-                    - href: 'https://us.rest.logs.insight.rapid7.com/management/logs/f15ad4cf-fe7d-4b7a-86b0-924997c1d8be'
-                      rel: Self
-                  name: My Other Log
-              description: ''
-              id: 814241d4-a14a-4c98-b059-b30978baf951
-              name: My LogSet
-            - user_data: {}
-              logs_info: []
-              description: ''
-              id: d25737e8-7135-4b48-b0f8-4b4b5b60b358
-              name: My Empty Log Set
-      properties:
-        logsets:
-          type: array
-          items:
-            type: object
-            properties:
-              user_data:
-                type: object
-              logs_info:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: 4c1e08f2-0398-48a5-9325-ac190e2f79e8
-                    links:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          href:
-                            type: string
-                            example: 'https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8'
-                          rel:
-                            type: string
-                            example: Self
-                    name:
-                      type: string
-                      example: Logset Data
-              description:
-                type: string
-              id:
-                type: string
-                example: 814241d4-a14a-4c98-b059-b30978baf951
-              name:
-                type: string
-                example: My Log Set
-      description: Returns a `logsets` array of multiple objects.
-    Create-Logset:
-      title: Create-Logset
-      type: object
-      x-tags:
-        - Logsets
-      x-examples:
-        Create Log Set Example:
-          logset:
-            name: MyLogSet2
-            logs_info:
-              - id: 63042c50-34a0-421a-aeef-7c313feb944c
-            user_data: {}
-      properties:
-        logset:
-          type: object
-          properties:
-            name:
-              type: string
-            logs_info:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-            user_data:
-              type: object
-    LogSet-Response:
-      title: Log Set-Response
-      type: object
-      x-tags:
-        - Logsets
-      x-examples:
-        LogSet Response:
-          logset:
-            id: 9fba111c-52c7-4235-9427-5114ef2d99ce
-            name: My Log Set
-            description: ''
-            user_data: {}
-            logs_info:
-              - id: 0868a0a4-a939-4a9c-9719-711f6d377021
-                name: My Log
-                links:
-                  - rel: Self
-                    href: 'https://us.rest.logs.insight.rapid7.com/management/logs/0868a0a4-a939-4a9c-9719-711f6d377021'
-      properties:
-        logset:
-          type: object
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-            description:
-              type: string
-            user_data:
-              type: object
-            logs_info:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  name:
-                    type: string
-                  links:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        rel:
-                          type: string
-                        href:
-                          type: string
-    Logs-Usage:
-      title: Logs-Usage
-      type: object
-      x-tags:
-        - Usage
-      properties:
-        per_day_usage:
-          type: object
-          properties:
-            usage:
-              type: array
-              items:
-                type: object
-                properties:
-                  interval:
-                    type: string
-                  log_usage:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        usage:
-                          type: integer
                         id:
+                          type: integer
+                        type:
                           type: string
-            period:
-              type: object
-              properties:
-                to:
-                  type: string
-                from:
-                  type: string
-            usage_units:
-              type: string
-            report_interval:
-              type: string
-      x-examples:
-        Logs Usage Example:
-          per_day_usage:
-            usage:
-              - interval: '2018-12-16'
-                log_usage:
-                  - usage: 8267539
-                    id: b2f37a6f-
-                  - usage: 9289532
-                    id: cec3450b-
-                  - usage: 12627779
-                    id: adc221c6-
-              - interval: '2018-12-17'
-                log_usage:
-                  - usage: 7648949
-                    id: 50499f85-
-                  - usage: 7764258
-                    id: b2f37a6f-
-              - interval: '2018-12-18'
-                log_usage:
-                  - usage: 8388395
-                    id: 50499f85-
-                  - usage: 8596388
-                    id: cec3450b-
-                  - usage: 12257438
-                    id: adc221c6-
-            period:
-              to: '2018-12-18'
-              from: '2018-12-16'
-            usage_units: bytes
-            report_interval: day
-    Account-Usage:
-      title: Account-Usage
-      properties:
-        daily_usage:
-          type: array
-          items:
-            type: object
-            properties:
-              usage:
-                type: integer
-              day:
+                        params_set:
+                          type: object
+                          properties:
+                            direct:
+                              type: string
+                            teams:
+                              type: string
+                            users:
+                              type: string
+                        alert_content_set:
+                          type: object
+                  enabled:
+                    type: boolean
+                  type:
+                    type: string
+            patterns:
+              type: array
+              items:
                 type: string
-        period_usage:
-          type: integer
-        period:
-          type: object
-          properties:
-            to:
-              type: string
-            from:
-              type: string
-        id:
-          type: string
-        name:
-          type: string
-      type: object
-      x-examples:
-        Account Usage: {}
-    Log-Usage:
-      title: Log-Usage
-      properties:
-        usage:
-          type: object
-          properties:
-            daily_usage:
+            labels:
               type: array
               items:
                 type: object
                 properties:
-                  usage:
+                  id:
                     type: string
-                  day:
+                  sn:
+                    type: integer
+                  name:
                     type: string
+                  color:
+                    type: string
+                  reserved:
+                    type: boolean
+      type: object
+      x-examples:
+        Tag Model Example:
+          tag:
+            type: Alert
+            id: de305d54-75b4-431b-adb2-eb6b9e546014
+            name: Power Button Pressed
+            sources: []
+            actions:
+              - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                min_matches_count: 1
+                min_report_count: 1
+                min_matches_period: Day
+                min_report_period: Day
+                targets:
+                  - id: 245ff892-ffed-4e99-9ee1-ab99fb20f2fc
+                    type: Mailto
+                    params_set:
+                      direct: user@example.com
+                      teams: ''
+                      users: user@example.com
+                    alert_content_set: {}
+                enabled: false
+                type: Alert
+            patterns:
+              - Power Button as
+            labels:
+              - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                sn: 1056
+                name: Power Button
+                color: 007afb
+                reserved: false
+      x-tags:
+        - Tags
+    Create-Saved-Query-Response:
+      title: Create-Saved-Query-Response
+      type: object
+      x-examples: {}
+      description: ''
+      x-tags:
+        - Saved Queries
+      properties:
+        saved_query:
+          type: object
+          properties:
             id:
               type: string
-            period:
+            name:
+              type: string
+            leql:
               type: object
               properties:
-                to:
+                statement:
                   type: string
-                from:
-                  type: string
-      type: object
-      x-examples:
-        Log Usage Example:
-          usage:
-            daily_usage:
-              - usage: '290349'
-                day: '2018-12-16'
-              - usage: '285438'
-                day: '2018-12-17'
-              - usage: '279626'
-                day: '2018-12-18'
-            id: '<Log Key>'
-            period:
-              to: '2018-12-18'
-              from: '2018-12-16'
-      description: ''
-    API-Key:
-      title: API-Key
-      type: object
-      x-tags:
-        - API
-      properties:
-        apikeys:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: API key ID used in URL to get this resource.
-              api_key:
-                type: string
-                description: The actual API key.
-                example: xxxxxxxx-dca9-xxxx-ae4f-a5432fc3aafc
-              active:
-                type: boolean
-                description: True if the key still active (false if disabled)
-              expires:
-                type: string
-                description: Set when created and checked when authentication.
-              apilimits:
+                during:
+                  type: object
+                  properties:
+                    time_range:
+                      type: string
+                    to:
+                      type: integer
+                    from:
+                      type: integer
+            logs:
+              type: array
+              items:
                 type: object
-                description: 'Consists of name:value pairs where name is management or query or any other api endpoint with a specific limit,'
-                properties:
-                  default:
-                    type: integer
-                  management:
-                    type: integer
-                  query:
-                    type: integer
-              acl_type:
-                type: string
-                description: 'Type of acl associated with this key - Owner, ReadWrite or ReadOnly.'
-                example: ReadOnly
-      x-examples:
-        API Key Example:
-          apikeys:
-            - id: 181c9a30-xxxx-4c7d-af1a-xxxxxxxxxxxx
-              api_key: "'00112233-4455-6677-8899-aabbccddeeff'"
-              acl_type: ReadOnly
-              apilimits:
-                default: 500
-                management: 1500
-                query: 1500
-              expires: null
-              active: true
-            - id: xxxxxxxx-0bd9-xxxx-8eaa-xxxxxxxxxxxx
-              api_key: xxxxxxxxx-fa82-xxxx-xxxx-b7db2c3fa542
-              acl_type: ReadWrite
-              apilimits:
-                default: 500
-                management: 1500
-                query: 1500
-              expires: null
-              active: true
-    Successful-Query-Started-Not-Finished:
-      title: Successful-Query-Started-Not-Finished
-      type: object
-      x-tags:
-        - Query
-      x-examples:
-        Started Not Finished:
-          logs:
-            - b7b33bce-58f1-42db-a36a-f452aa240d73
-          progress: 0
-          events: []
-          links:
-            - rel: Self
-              href: 'https://eu.api.insight.rapid7.com/log_search/query/5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:?log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&query=where%28http.status%29&time_range=Last+30+Days'
-          id: '5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:'
-          leql:
-            statement: where(http.status)
-            during:
-              from: 1583006834768
-              to: 1585598834768
-              time_range: Last 30 Days
-      description: HTTP 202 for a query that successfully started but has not yet finished
-      properties:
-        logs:
-          type: array
-          items:
-            type: string
-        progress:
-          type: integer
-        events:
-          type: array
-          items:
-            type: object
-        links:
-          type: array
-          items:
-            type: object
-            properties:
-              rel:
-                type: string
-              href:
-                type: string
-        id:
-          type: string
-        leql:
-          type: object
-          properties:
-            statement:
-              type: string
-            during:
-              type: object
-              properties:
-                from:
-                  type: integer
-                to:
-                  type: integer
-                time_range:
-                  type: string
-    Long-Running-Query-Response:
-      title: Long-Running-Query-Response
-      type: object
-      x-tags:
-        - Query
-      properties:
-        logs:
-          type: array
-          items:
-            type: string
-        id:
-          type: string
-        progress:
-          type: integer
-        query:
-          type: object
-          properties:
-            statement:
-              type: string
-            during:
-              type: object
-              properties:
-                to:
-                  type: integer
-                from:
-                  type: integer
-      x-examples:
-        Long Running Query Example:
-          logs:
-            - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
-          id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
-          progress: 0
-          query:
-            statement: 'where(foo) calculate(count:x)'
-            during:
-              to: 100000
-              from: 100
-          links:
-            - rel: self
-              href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
   securitySchemes:
     x-api-key:
       name: x-api-key
