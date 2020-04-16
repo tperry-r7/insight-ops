@@ -410,7 +410,7 @@ paths:
                       logs: []
                       leql:
                         during:
-                          to:  1450557604000
+                          to: 1450557604000
                           from: 1450557604000
                           time_range: Today
                         statement: where(foo=bar)
@@ -1047,6 +1047,7 @@ paths:
         **Authentication**
          - Read Write
          - Read Only
+
 
 
 
@@ -2040,18 +2041,8 @@ components:
         - Saved Queries
     Create-Saved-Query:
       type: object
-      x-examples:
-        Create Saved Query:
-          saved_query:
-            logs: []
-            leql:
-              during:
-                to: 1450557604000
-                from: 1450557004000
-                time_range: 1460557604000
-              statement: where(foo=bar)
-            name: MySearch
-      title: ''
+      x-examples: {}
+      title: Create-Saved-Query
       properties:
         saved_query:
           type: object
@@ -2098,20 +2089,9 @@ components:
       x-tags:
         - Saved Queries
     Create-Saved-Query-Response:
-      title: ''
+      title: Create-Saved-Query-Response
       type: object
-      x-examples:
-        Create Saved Query Response:
-          saved_query:
-            id: 00000000-0001-bd8a-0000-000000000000
-            logs: []
-            leql:
-              during:
-                to: 1450557604000
-                from: 1450557604000
-                time_range: Today
-              statement: where(foo=bar)
-            name: MySearch
+      x-examples: {}
       properties:
         saved_query:
           type: object
