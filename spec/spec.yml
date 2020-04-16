@@ -35,7 +35,67 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Successful-Query'
+                title: Successful-Query
+                type: object
+                x-tags:
+                  - Query
+                x-examples:
+                  200 for a successful query:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    statistics: {}
+                    leql:
+                      statement: where(something) calculate(count)
+                      during:
+                        from: 1
+                        to: 10000
+                description: |
+                  HTTP 200 for a successful query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        labels:
+                          type: array
+                          items:
+                            type: object
+                        timestamp:
+                          type: integer
+                        sequence_number:
+                          type: integer
+                        log_id:
+                          type: string
+                        message:
+                          type: string
+                        links:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              rel:
+                                type: string
+                              href:
+                                type: string
+                  leql:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          from:
+                            type: integer
+                          to:
+                            type: integer
+                          time_range:
+                            type: string
               examples:
                 Successful Query:
                   value:
@@ -61,7 +121,63 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Successful-Query-Started-Not-Finished'
+                title: Successful-Query-Started-Not-Finished
+                type: object
+                x-tags:
+                  - Query
+                x-examples:
+                  Started Not Finished:
+                    logs:
+                      - b7b33bce-58f1-42db-a36a-f452aa240d73
+                    progress: 0
+                    events: []
+                    links:
+                      - rel: Self
+                        href: 'https://eu.api.insight.rapid7.com/log_search/query/5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:?log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&query=where%28http.status%29&time_range=Last+30+Days'
+                    id: '5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:'
+                    leql:
+                      statement: where(http.status)
+                      during:
+                        from: 1583006834768
+                        to: 1585598834768
+                        time_range: Last 30 Days
+                description: HTTP 202 for a query that successfully started but has not yet finished
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  progress:
+                    type: integer
+                  events:
+                    type: array
+                    items:
+                      type: object
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rel:
+                          type: string
+                        href:
+                          type: string
+                  id:
+                    type: string
+                  leql:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          from:
+                            type: integer
+                          to:
+                            type: integer
+                          time_range:
+                            type: string
               examples:
                 Long Running Query:
                   value:
@@ -127,7 +243,67 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Successful-Query'
+                title: Successful-Query
+                type: object
+                x-tags:
+                  - Query
+                x-examples:
+                  200 for a successful query:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    statistics: {}
+                    leql:
+                      statement: where(something) calculate(count)
+                      during:
+                        from: 1
+                        to: 10000
+                description: |
+                  HTTP 200 for a successful query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        labels:
+                          type: array
+                          items:
+                            type: object
+                        timestamp:
+                          type: integer
+                        sequence_number:
+                          type: integer
+                        log_id:
+                          type: string
+                        message:
+                          type: string
+                        links:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              rel:
+                                type: string
+                              href:
+                                type: string
+                  leql:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          from:
+                            type: integer
+                          to:
+                            type: integer
+                          time_range:
+                            type: string
               examples:
                 Successful Query:
                   value:
@@ -146,7 +322,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Long-Running-Query-Response'
+                title: Long-Running-Query-Response
+                type: object
+                x-tags:
+                  - Query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  id:
+                    type: string
+                  progress:
+                    type: integer
+                  query:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          to:
+                            type: integer
+                          from:
+                            type: integer
+                x-examples:
+                  Long Running Query Example:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
+                    progress: 0
+                    query:
+                      statement: 'where(foo) calculate(count:x)'
+                      during:
+                        to: 100000
+                        from: 100
+                    links:
+                      - rel: self
+                        href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
               examples:
                 Long Running Query:
                   value:
@@ -218,13 +432,111 @@ paths:
               examples:
                 example-1: {}
               schema:
-                $ref: '#/components/schemas/Successful-Query'
+                title: Successful-Query
+                type: object
+                x-tags:
+                  - Query
+                x-examples:
+                  200 for a successful query:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    statistics: {}
+                    leql:
+                      statement: where(something) calculate(count)
+                      during:
+                        from: 1
+                        to: 10000
+                description: |
+                  HTTP 200 for a successful query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        labels:
+                          type: array
+                          items:
+                            type: object
+                        timestamp:
+                          type: integer
+                        sequence_number:
+                          type: integer
+                        log_id:
+                          type: string
+                        message:
+                          type: string
+                        links:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              rel:
+                                type: string
+                              href:
+                                type: string
+                  leql:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          from:
+                            type: integer
+                          to:
+                            type: integer
+                          time_range:
+                            type: string
         '202':
           description: 'Accepted. A HTTP 202 status and a response containing an ID and links to continue polling if the query is still in progress. '
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Long-Running-Query-Response'
+                title: Long-Running-Query-Response
+                type: object
+                x-tags:
+                  - Query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  id:
+                    type: string
+                  progress:
+                    type: integer
+                  query:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          to:
+                            type: integer
+                          from:
+                            type: integer
+                x-examples:
+                  Long Running Query Example:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
+                    progress: 0
+                    query:
+                      statement: 'where(foo) calculate(count:x)'
+                      during:
+                        to: 100000
+                        from: 100
+                    links:
+                      - rel: self
+                        href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
               examples:
                 Long Running Query:
                   value:
@@ -258,7 +570,67 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Successful-Query'
+                title: Successful-Query
+                type: object
+                x-tags:
+                  - Query
+                x-examples:
+                  200 for a successful query:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    statistics: {}
+                    leql:
+                      statement: where(something) calculate(count)
+                      during:
+                        from: 1
+                        to: 10000
+                description: |
+                  HTTP 200 for a successful query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        labels:
+                          type: array
+                          items:
+                            type: object
+                        timestamp:
+                          type: integer
+                        sequence_number:
+                          type: integer
+                        log_id:
+                          type: string
+                        message:
+                          type: string
+                        links:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              rel:
+                                type: string
+                              href:
+                                type: string
+                  leql:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          from:
+                            type: integer
+                          to:
+                            type: integer
+                          time_range:
+                            type: string
               examples:
                 Successful query:
                   value:
@@ -275,7 +647,63 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Successful-Query-Started-Not-Finished'
+                title: Successful-Query-Started-Not-Finished
+                type: object
+                x-tags:
+                  - Query
+                x-examples:
+                  Started Not Finished:
+                    logs:
+                      - b7b33bce-58f1-42db-a36a-f452aa240d73
+                    progress: 0
+                    events: []
+                    links:
+                      - rel: Self
+                        href: 'https://eu.api.insight.rapid7.com/log_search/query/5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:?log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&query=where%28http.status%29&time_range=Last+30+Days'
+                    id: '5bc93cbb-7b24-41ca-b13e-7dc5e3ba3387:0:8d2096da7091f337b83d95aae6546d28e94650e3:50:e56ec94a6ba398f9f2b378cca21eeeed35929b92:'
+                    leql:
+                      statement: where(http.status)
+                      during:
+                        from: 1583006834768
+                        to: 1585598834768
+                        time_range: Last 30 Days
+                description: HTTP 202 for a query that successfully started but has not yet finished
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  progress:
+                    type: integer
+                  events:
+                    type: array
+                    items:
+                      type: object
+                  links:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rel:
+                          type: string
+                        href:
+                          type: string
+                  id:
+                    type: string
+                  leql:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          from:
+                            type: integer
+                          to:
+                            type: integer
+                          time_range:
+                            type: string
               examples:
                 Successfully started but has not yet finished:
                   value:
@@ -296,7 +724,60 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Post-Query'
+              title: Post-Query-Logs
+              type: object
+              x-tags:
+                - Query
+              x-examples:
+                Post Query Example:
+                  logs:
+                    - 34634d9e-89e8-4e02-a255-f10baf0e9f2b
+                    - 34634d9e-89e8-4e02-a255-f10baf0e9f2b
+                  leql:
+                    during:
+                      from: 1432080000000
+                      to: 1432090000000
+                    statement: 'where(/.*/)'
+              properties:
+                logs:
+                  type: array
+                  description: List of log keys.
+                  items:
+                    type: string
+                  example:
+                    - 34634d9e-89e8-4e02-a255-f10baf0e9f2b
+                    - 34634d9e-89e8-4e02-a255-f10baf0e9f2b
+                leql:
+                  type: object
+                  required:
+                    - during
+                    - statement
+                  properties:
+                    during:
+                      type: object
+                      required:
+                        - from
+                        - to
+                      properties:
+                        from:
+                          type: integer
+                          description: |-
+                            Lower bound of the time range you want to query against.
+                            Format: UNIX timestamp in milliseconds.
+                          example: 1450557604000
+                        to:
+                          type: integer
+                          example: 1460557604000
+                          description: |-
+                            Lower bound of the time range you want to query against.
+                            Format: UNIX timestamp in milliseconds.
+                    statement:
+                      type: string
+                      example: 'where(/.*/)'
+                      description: "A valid LEQL query to run against the log. \t"
+              required:
+                - logs
+                - leql
             examples:
               Query Log Entries Example:
                 value:
@@ -320,14 +801,140 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Successful-Saved-Query'
+                oneOf:
+                  - properties:
+                      logs:
+                        type: array
+                        description: Array of log keys
+                        items:
+                          type: string
+                      id:
+                        type: string
+                        example: 00000000-0001-bd8a-0000-000000000000
+                        description: ID of the query
+                      leql:
+                        type: object
+                        properties:
+                          during:
+                            type: object
+                            properties:
+                              to:
+                                type: integer
+                                description: |-
+                                  Upper bound of the time range you want to query against.
+                                  Format: UNIX timestamp in milliseconds
+                                example: 1460557604000
+                              from:
+                                type: integer
+                                description: "Lower bound of the time range you want to query against.\nFormat: UNIX timestamp in milliseconds\t"
+                                example: 1450557604000
+                              time_range:
+                                type: string
+                                example: Last 4 Days
+                                description: Your events over a period of time.
+                          statement:
+                            type: string
+                            description: A valid LEQL query
+                            example: where(foo=bar)
+                      name:
+                        type: string
+                        description: Name of the query
+                        example: search-dec-2019
+                  - properties:
+                      saved_queries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            saved_query:
+                              type: object
+                              properties:
+                                logs:
+                                  type: array
+                                  description: Array of log keys
+                                  items:
+                                    type: string
+                                id:
+                                  type: string
+                                  example: 00000000-0001-bd8a-0000-000000000000
+                                  description: ID of the query
+                                leql:
+                                  type: object
+                                  properties:
+                                    during:
+                                      type: object
+                                      properties:
+                                        to:
+                                          type: integer
+                                          example: 1460557604000
+                                          description: |-
+                                            Upper bound of the time range you want to query against.
+                                            Format: UNIX timestamp in milliseconds
+                                        from:
+                                          type: integer
+                                          example: 1450557604000
+                                          description: "Lower bound of the time range you want to query against.\nFormat: UNIX timestamp in milliseconds\t"
+                                        time_range:
+                                          type: string
+                                          example: Last 4 Days
+                                          description: Your events over a period of time.
+                                    statement:
+                                      type: string
+                                      description: A valid LEQL query
+                                      example: where(foo=bar)
+                                name:
+                                  type: string
+                                  example: search-dec-2019
+                                  description: Name of the query
+                description: 'When using the query UUID, a `saved_query` object is returned. With out a query field then object array of `saved_queries` returns.'
+                type: object
+                x-tags:
+                  - Saved Queries
               examples: {}
         '202':
           description: Accepted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Long-Running-Query-Response'
+                title: Long-Running-Query-Response
+                type: object
+                x-tags:
+                  - Query
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                  id:
+                    type: string
+                  progress:
+                    type: integer
+                  query:
+                    type: object
+                    properties:
+                      statement:
+                        type: string
+                      during:
+                        type: object
+                        properties:
+                          to:
+                            type: integer
+                          from:
+                            type: integer
+                x-examples:
+                  Long Running Query Example:
+                    logs:
+                      - f9c6e2c1-ac7a-4a29-8faa-a8d70f96df70
+                    id: deace1fd-e605-41cd-a45c-5bf1ff0c3402-1
+                    progress: 0
+                    query:
+                      statement: 'where(foo) calculate(count:x)'
+                      during:
+                        to: 100000
+                        from: 100
+                    links:
+                      - rel: self
+                        href: 'https://us.rest.logs.insight.rapid7.com/query/deace1fd-e605-41cd-a45c-5bf1ff0c3402-1'
               examples:
                 Long Running Query:
                   value:
@@ -365,7 +972,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Create-Saved-Query-Response'
+                title: Create-Saved-Query-Response
+                type: object
+                x-examples: {}
+                description: ''
+                x-tags:
+                  - Saved Queries
+                properties:
+                  saved_query:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      leql:
+                        type: object
+                        properties:
+                          statement:
+                            type: string
+                          during:
+                            type: object
+                            properties:
+                              time_range:
+                                type: string
+                              to:
+                                type: integer
+                              from:
+                                type: integer
+                      logs:
+                        type: array
+                        items:
+                          type: object
               examples:
                 Create Saved Query Response:
                   value:
@@ -386,6 +1024,8 @@ paths:
             * LEQL query is invalid. Validation: 1-1024 chars in length
       operationId: post-query-saved_queries
       description: |-
+        **Overview**
+        <h1>Overview</h1>
         Request to create a new Saved Query.
 
         **Authentication**
@@ -395,7 +1035,49 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Create-Saved-Query'
+              type: object
+              title: Create-Saved-Query
+              x-tags:
+                - Saved Queries
+              properties:
+                saved_query:
+                  type: object
+                  properties:
+                    logs:
+                      type: array
+                      items:
+                        type: object
+                    leql:
+                      type: object
+                      properties:
+                        during:
+                          type: object
+                          properties:
+                            to:
+                              type: integer
+                            from:
+                              type: integer
+                            time_range:
+                              type: string
+                        statement:
+                          type: string
+                      required:
+                        - statement
+                    name:
+                      type: string
+                  required:
+                    - name
+              x-examples:
+                Create Saved Query Example:
+                  saved_query:
+                    logs: []
+                    leql:
+                      during:
+                        to: 1450557604000
+                        from: 1450557604000
+                        time_range: Last 30 days
+                      statement: where(foo=bar)
+                    name: MySearch
             examples:
               Create Saved Query Example:
                 value:
@@ -418,7 +1100,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Create-Saved-Query-Response'
+                title: Create-Saved-Query-Response
+                type: object
+                x-examples: {}
+                description: ''
+                x-tags:
+                  - Saved Queries
+                properties:
+                  saved_query:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      leql:
+                        type: object
+                        properties:
+                          statement:
+                            type: string
+                          during:
+                            type: object
+                            properties:
+                              time_range:
+                                type: string
+                              to:
+                                type: integer
+                              from:
+                                type: integer
+                      logs:
+                        type: array
+                        items:
+                          type: object
               examples:
                 Update Saved Query Response:
                   value:
@@ -456,7 +1169,49 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Create-Saved-Query'
+              type: object
+              title: Create-Saved-Query
+              x-tags:
+                - Saved Queries
+              properties:
+                saved_query:
+                  type: object
+                  properties:
+                    logs:
+                      type: array
+                      items:
+                        type: object
+                    leql:
+                      type: object
+                      properties:
+                        during:
+                          type: object
+                          properties:
+                            to:
+                              type: integer
+                            from:
+                              type: integer
+                            time_range:
+                              type: string
+                        statement:
+                          type: string
+                      required:
+                        - statement
+                    name:
+                      type: string
+                  required:
+                    - name
+              x-examples:
+                Create Saved Query Example:
+                  saved_query:
+                    logs: []
+                    leql:
+                      during:
+                        to: 1450557604000
+                        from: 1450557604000
+                        time_range: Last 30 days
+                      statement: where(foo=bar)
+                    name: MySearch
             examples:
               Update a saved query:
                 value:
@@ -479,7 +1234,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Create-Saved-Query-Response'
+                title: Create-Saved-Query-Response
+                type: object
+                x-examples: {}
+                description: ''
+                x-tags:
+                  - Saved Queries
+                properties:
+                  saved_query:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      leql:
+                        type: object
+                        properties:
+                          statement:
+                            type: string
+                          during:
+                            type: object
+                            properties:
+                              time_range:
+                                type: string
+                              to:
+                                type: integer
+                              from:
+                                type: integer
+                      logs:
+                        type: array
+                        items:
+                          type: object
               examples:
                 Patch Saved Query Response:
                   value:
@@ -512,7 +1298,49 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Create-Saved-Query'
+              type: object
+              title: Create-Saved-Query
+              x-tags:
+                - Saved Queries
+              properties:
+                saved_query:
+                  type: object
+                  properties:
+                    logs:
+                      type: array
+                      items:
+                        type: object
+                    leql:
+                      type: object
+                      properties:
+                        during:
+                          type: object
+                          properties:
+                            to:
+                              type: integer
+                            from:
+                              type: integer
+                            time_range:
+                              type: string
+                        statement:
+                          type: string
+                      required:
+                        - statement
+                    name:
+                      type: string
+                  required:
+                    - name
+              x-examples:
+                Create Saved Query Example:
+                  saved_query:
+                    logs: []
+                    leql:
+                      during:
+                        to: 1450557604000
+                        from: 1450557604000
+                        time_range: Last 30 days
+                      statement: where(foo=bar)
+                    name: MySearch
             examples:
               Patch Saved Query Request:
                 value:
@@ -547,7 +1375,113 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag-Response'
+                title: Tag-Model
+                properties:
+                  tag:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      sources:
+                        type: array
+                        items:
+                          type: object
+                      actions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            min_matches_count:
+                              type: integer
+                            min_report_count:
+                              type: integer
+                            min_matches_period:
+                              type: string
+                            min_report_period:
+                              type: string
+                            targets:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  type:
+                                    type: string
+                                  params_set:
+                                    type: object
+                                    properties:
+                                      direct:
+                                        type: string
+                                      teams:
+                                        type: string
+                                      users:
+                                        type: string
+                                  alert_content_set:
+                                    type: object
+                            enabled:
+                              type: boolean
+                            type:
+                              type: string
+                      patterns:
+                        type: array
+                        items:
+                          type: string
+                      labels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sn:
+                              type: integer
+                            name:
+                              type: string
+                            color:
+                              type: string
+                            reserved:
+                              type: boolean
+                type: object
+                x-examples:
+                  Tag Model Example:
+                    tag:
+                      type: Alert
+                      id: de305d54-75b4-431b-adb2-eb6b9e546014
+                      name: Power Button Pressed
+                      sources: []
+                      actions:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          min_matches_count: 1
+                          min_report_count: 1
+                          min_matches_period: Day
+                          min_report_period: Day
+                          targets:
+                            - id: 245ff892-ffed-4e99-9ee1-ab99fb20f2fc
+                              type: Mailto
+                              params_set:
+                                direct: user@example.com
+                                teams: ''
+                                users: user@example.com
+                              alert_content_set: {}
+                          enabled: false
+                          type: Alert
+                      patterns:
+                        - Power Button as
+                      labels:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          sn: 1056
+                          name: Power Button
+                          color: 007afb
+                          reserved: false
+                x-tags:
+                  - Tags
               examples:
                 Get a Tag Response:
                   value:
@@ -599,7 +1533,113 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag-Response'
+                title: Tag-Model
+                properties:
+                  tag:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      sources:
+                        type: array
+                        items:
+                          type: object
+                      actions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            min_matches_count:
+                              type: integer
+                            min_report_count:
+                              type: integer
+                            min_matches_period:
+                              type: string
+                            min_report_period:
+                              type: string
+                            targets:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  type:
+                                    type: string
+                                  params_set:
+                                    type: object
+                                    properties:
+                                      direct:
+                                        type: string
+                                      teams:
+                                        type: string
+                                      users:
+                                        type: string
+                                  alert_content_set:
+                                    type: object
+                            enabled:
+                              type: boolean
+                            type:
+                              type: string
+                      patterns:
+                        type: array
+                        items:
+                          type: string
+                      labels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sn:
+                              type: integer
+                            name:
+                              type: string
+                            color:
+                              type: string
+                            reserved:
+                              type: boolean
+                type: object
+                x-examples:
+                  Tag Model Example:
+                    tag:
+                      type: Alert
+                      id: de305d54-75b4-431b-adb2-eb6b9e546014
+                      name: Power Button Pressed
+                      sources: []
+                      actions:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          min_matches_count: 1
+                          min_report_count: 1
+                          min_matches_period: Day
+                          min_report_period: Day
+                          targets:
+                            - id: 245ff892-ffed-4e99-9ee1-ab99fb20f2fc
+                              type: Mailto
+                              params_set:
+                                direct: user@example.com
+                                teams: ''
+                                users: user@example.com
+                              alert_content_set: {}
+                          enabled: false
+                          type: Alert
+                      patterns:
+                        - Power Button as
+                      labels:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          sn: 1056
+                          name: Power Button
+                          color: 007afb
+                          reserved: false
+                x-tags:
+                  - Tags
               examples:
                 Update a Tag Response:
                   value:
@@ -649,7 +1689,113 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tag-Request-Model'
+              title: Tag-Request-Model
+              properties:
+                tag:
+                  type: object
+                  properties:
+                    actions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                          min_matches_count:
+                            type: integer
+                          min_matches_period:
+                            type: string
+                          min_report_count:
+                            type: integer
+                          min_report_period:
+                            type: string
+                          targets:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                alert_content_set:
+                                  type: object
+                                  properties:
+                                    le_context:
+                                      type: string
+                                params_set:
+                                  type: object
+                                  properties:
+                                    direct:
+                                      type: string
+                                    teams:
+                                      type: string
+                                    users:
+                                      type: string
+                                type:
+                                  type: string
+                          type:
+                            type: string
+                    labels:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          color:
+                            type: string
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          reserved:
+                            type: boolean
+                          sn:
+                            type: integer
+                    name:
+                      type: string
+                    patterns:
+                      type: array
+                      items:
+                        type: string
+                    sources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                    type:
+                      type: string
+              type: object
+              description: ''
+              x-examples:
+                Tag Request Model Example:
+                  tag:
+                    actions:
+                      - enabled: true
+                        min_matches_count: 0
+                        min_matches_period: Hour
+                        min_report_count: 1
+                        min_report_period: Hour
+                        targets:
+                          - alert_content_set:
+                              le_context: 'true'
+                            params_set:
+                              direct: test@test.com
+                              teams: ''
+                              users: ''
+                            type: mailto
+                        type: Alert
+                    labels:
+                      - color: 3498db
+                        id: a6b486c1-306f-4575-95cc-0eee40f8f7e6
+                        name: Test Label
+                        reserved: false
+                        sn: 1025
+                    name: Foo Bar Tag
+                    patterns:
+                      - /Foo Bar/
+                    sources:
+                      - id: 3358b7ee-9238-4181-ab80-afb026f38081
+                    type: Alert
+              x-tags:
+                - Tags
             examples:
               Update a Tag Example:
                 value:
@@ -693,7 +1839,113 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag-Response'
+                title: Tag-Model
+                properties:
+                  tag:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      sources:
+                        type: array
+                        items:
+                          type: object
+                      actions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            min_matches_count:
+                              type: integer
+                            min_report_count:
+                              type: integer
+                            min_matches_period:
+                              type: string
+                            min_report_period:
+                              type: string
+                            targets:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  type:
+                                    type: string
+                                  params_set:
+                                    type: object
+                                    properties:
+                                      direct:
+                                        type: string
+                                      teams:
+                                        type: string
+                                      users:
+                                        type: string
+                                  alert_content_set:
+                                    type: object
+                            enabled:
+                              type: boolean
+                            type:
+                              type: string
+                      patterns:
+                        type: array
+                        items:
+                          type: string
+                      labels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sn:
+                              type: integer
+                            name:
+                              type: string
+                            color:
+                              type: string
+                            reserved:
+                              type: boolean
+                type: object
+                x-examples:
+                  Tag Model Example:
+                    tag:
+                      type: Alert
+                      id: de305d54-75b4-431b-adb2-eb6b9e546014
+                      name: Power Button Pressed
+                      sources: []
+                      actions:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          min_matches_count: 1
+                          min_report_count: 1
+                          min_matches_period: Day
+                          min_report_period: Day
+                          targets:
+                            - id: 245ff892-ffed-4e99-9ee1-ab99fb20f2fc
+                              type: Mailto
+                              params_set:
+                                direct: user@example.com
+                                teams: ''
+                                users: user@example.com
+                              alert_content_set: {}
+                          enabled: false
+                          type: Alert
+                      patterns:
+                        - Power Button as
+                      labels:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          sn: 1056
+                          name: Power Button
+                          color: 007afb
+                          reserved: false
+                x-tags:
+                  - Tags
               examples:
                 Get All Tags Example Response:
                   value:
@@ -780,7 +2032,113 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag-Response'
+                title: Tag-Model
+                properties:
+                  tag:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      sources:
+                        type: array
+                        items:
+                          type: object
+                      actions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            min_matches_count:
+                              type: integer
+                            min_report_count:
+                              type: integer
+                            min_matches_period:
+                              type: string
+                            min_report_period:
+                              type: string
+                            targets:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  type:
+                                    type: string
+                                  params_set:
+                                    type: object
+                                    properties:
+                                      direct:
+                                        type: string
+                                      teams:
+                                        type: string
+                                      users:
+                                        type: string
+                                  alert_content_set:
+                                    type: object
+                            enabled:
+                              type: boolean
+                            type:
+                              type: string
+                      patterns:
+                        type: array
+                        items:
+                          type: string
+                      labels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sn:
+                              type: integer
+                            name:
+                              type: string
+                            color:
+                              type: string
+                            reserved:
+                              type: boolean
+                type: object
+                x-examples:
+                  Tag Model Example:
+                    tag:
+                      type: Alert
+                      id: de305d54-75b4-431b-adb2-eb6b9e546014
+                      name: Power Button Pressed
+                      sources: []
+                      actions:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          min_matches_count: 1
+                          min_report_count: 1
+                          min_matches_period: Day
+                          min_report_period: Day
+                          targets:
+                            - id: 245ff892-ffed-4e99-9ee1-ab99fb20f2fc
+                              type: Mailto
+                              params_set:
+                                direct: user@example.com
+                                teams: ''
+                                users: user@example.com
+                              alert_content_set: {}
+                          enabled: false
+                          type: Alert
+                      patterns:
+                        - Power Button as
+                      labels:
+                        - id: de305d54-75b4-431b-adb2-eb6b9e546014
+                          sn: 1056
+                          name: Power Button
+                          color: 007afb
+                          reserved: false
+                x-tags:
+                  - Tags
               examples:
                 Create Tag Response:
                   value:
@@ -848,7 +2206,113 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tag-Request-Model'
+              title: Tag-Request-Model
+              properties:
+                tag:
+                  type: object
+                  properties:
+                    actions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                          min_matches_count:
+                            type: integer
+                          min_matches_period:
+                            type: string
+                          min_report_count:
+                            type: integer
+                          min_report_period:
+                            type: string
+                          targets:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                alert_content_set:
+                                  type: object
+                                  properties:
+                                    le_context:
+                                      type: string
+                                params_set:
+                                  type: object
+                                  properties:
+                                    direct:
+                                      type: string
+                                    teams:
+                                      type: string
+                                    users:
+                                      type: string
+                                type:
+                                  type: string
+                          type:
+                            type: string
+                    labels:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          color:
+                            type: string
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          reserved:
+                            type: boolean
+                          sn:
+                            type: integer
+                    name:
+                      type: string
+                    patterns:
+                      type: array
+                      items:
+                        type: string
+                    sources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                    type:
+                      type: string
+              type: object
+              description: ''
+              x-examples:
+                Tag Request Model Example:
+                  tag:
+                    actions:
+                      - enabled: true
+                        min_matches_count: 0
+                        min_matches_period: Hour
+                        min_report_count: 1
+                        min_report_period: Hour
+                        targets:
+                          - alert_content_set:
+                              le_context: 'true'
+                            params_set:
+                              direct: test@test.com
+                              teams: ''
+                              users: ''
+                            type: mailto
+                        type: Alert
+                    labels:
+                      - color: 3498db
+                        id: a6b486c1-306f-4575-95cc-0eee40f8f7e6
+                        name: Test Label
+                        reserved: false
+                        sn: 1025
+                    name: Foo Bar Tag
+                    patterns:
+                      - /Foo Bar/
+                    sources:
+                      - id: 3358b7ee-9238-4181-ab80-afb026f38081
+                    type: Alert
+              x-tags:
+                - Tags
             examples:
               Create a New Tag Request:
                 value:
@@ -984,7 +2448,39 @@ paths:
                   labels:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Labels-Response'
+                      title: Labels-Response
+                      type: object
+                      x-tags:
+                        - Labels
+                      properties:
+                        labels:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              sn:
+                                type: integer
+                              name:
+                                type: string
+                              color:
+                                type: string
+                              reserved:
+                                type: boolean
+                      x-examples:
+                        Get All Labels:
+                          labels:
+                            - id: 5bf12ea5-d064-4412-9d8f-71fc52ed9d12
+                              sn: 1022
+                              name: DemoTag-Last 20min
+                              color: 0000cc
+                              reserved: false
+                            - id: 15e996c9-4f43-4731-b214-e6eae66e4281
+                              sn: 1014
+                              name: DemoTag-Wrap Text Button
+                              color: 9b59b6
+                              reserved: false
               examples:
                 Get All Labels Response:
                   value:
@@ -1027,7 +2523,90 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Log-Response'
+                title: Log-Response
+                x-examples:
+                  Logs Response Example:
+                    log:
+                      id: 113933b0-6b0c-4b96-830f-777071ccf470
+                      name: R7-Log
+                      tokens:
+                        - aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
+                      structures: []
+                      user_data:
+                        le_agent_filename: ''
+                        le_agent_follow: 'false'
+                      source_type: token
+                      token_seed: null
+                      retention_period: default
+                      links:
+                        - rel: Related
+                          href: 'https://eu.api.insight.rapid7.com/log_search/management/logs/aaaaaaaa-bbbb-cccc-dddd-eeeeeeee/topkeys'
+                      logsets_info:
+                        - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
+                          name: PHP_LogSet
+                          links:
+                            - rel: Self
+                              href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
+                        - id: 306c8474-05c9-4edd
+                          name: CloudTrail_Logset
+                          links:
+                            - rel: Self
+                              href: 'https://eu.api.insight.rapid7.com/log_search/management/logsets/306c8474-05c9-4edd'
+                type: object
+                description: ''
+                x-tags:
+                  - Logs
+                properties:
+                  log:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      tokens:
+                        type: array
+                        items:
+                          type: string
+                      structures:
+                        type: array
+                        items:
+                          type: object
+                      user_data:
+                        type: object
+                      source_type:
+                        type: string
+                      token_seed:
+                        type: string
+                      retention_period:
+                        type: string
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            rel:
+                              type: string
+                            href:
+                              type: string
+                      logsets_info:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  rel:
+                                    type: string
+                                  href:
+                                    type: string
               examples:
                 Get Log Response Example:
                   value:
@@ -1070,7 +2649,6 @@ paths:
 
 
 
-
     put:
       summary: Update a Log
       operationId: put-management-logs-logId
@@ -1080,7 +2658,90 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Log-Response'
+                title: Log-Response
+                x-examples:
+                  Logs Response Example:
+                    log:
+                      id: 113933b0-6b0c-4b96-830f-777071ccf470
+                      name: R7-Log
+                      tokens:
+                        - aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa
+                      structures: []
+                      user_data:
+                        le_agent_filename: ''
+                        le_agent_follow: 'false'
+                      source_type: token
+                      token_seed: null
+                      retention_period: default
+                      links:
+                        - rel: Related
+                          href: 'https://eu.api.insight.rapid7.com/log_search/management/logs/aaaaaaaa-bbbb-cccc-dddd-eeeeeeee/topkeys'
+                      logsets_info:
+                        - id: 3aa5da13-3bb6-4457-ab6c-0d6b01ec892d
+                          name: PHP_LogSet
+                          links:
+                            - rel: Self
+                              href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/7a70d526-b69f-4030-904f-62dfd25d8d03'
+                        - id: 306c8474-05c9-4edd
+                          name: CloudTrail_Logset
+                          links:
+                            - rel: Self
+                              href: 'https://eu.api.insight.rapid7.com/log_search/management/logsets/306c8474-05c9-4edd'
+                type: object
+                description: ''
+                x-tags:
+                  - Logs
+                properties:
+                  log:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      tokens:
+                        type: array
+                        items:
+                          type: string
+                      structures:
+                        type: array
+                        items:
+                          type: object
+                      user_data:
+                        type: object
+                      source_type:
+                        type: string
+                      token_seed:
+                        type: string
+                      retention_period:
+                        type: string
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            rel:
+                              type: string
+                            href:
+                              type: string
+                      logsets_info:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  rel:
+                                    type: string
+                                  href:
+                                    type: string
               examples:
                 Update a Log Response:
                   value:
@@ -1112,7 +2773,68 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Update-a-Log'
+              title: Update-a-Log
+              x-examples:
+                Update a Log Example:
+                  log:
+                    logsets_info:
+                      - id: 4e6dadf9-961e-48f4-82cf-452de78eb217
+                        links:
+                          - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/4e6dadf9-961e-48f4-82cf-452de78eb217'
+                            rel: Self
+                        name: ibtest
+                    name: MyUpdatedLogName
+                    user_data:
+                      le_agent_filename: ''
+                      le_agent_follow: 'false'
+                    tokens:
+                      - 856bd7f8-07b4-4cf2-889d-3ce0793ff76f
+                    token_seed: null
+                    structures: []
+              properties:
+                log:
+                  type: object
+                  properties:
+                    logsets_info:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          links:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                                rel:
+                                  type: string
+                          name:
+                            type: string
+                    name:
+                      type: string
+                    user_data:
+                      type: object
+                      properties:
+                        le_agent_filename:
+                          type: string
+                        le_agent_follow:
+                          type: string
+                    tokens:
+                      type: array
+                      items:
+                        type: string
+                    token_seed:
+                      type: integer
+                    structures:
+                      type: array
+                      items:
+                        type: object
+              type: object
+              x-tags:
+                - Logs
             examples:
               Update a Log Example:
                 value:
@@ -1158,7 +2880,92 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Logs'
+                title: Logs
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        logsets_info:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              links:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    href:
+                                      type: string
+                                    rel:
+                                      type: string
+                              name:
+                                type: string
+                        name:
+                          type: string
+                        user_data:
+                          type: object
+                          properties:
+                            le_agent_filename:
+                              type: string
+                            le_agent_follow:
+                              type: string
+                        tokens:
+                          type: array
+                          items:
+                            type: string
+                        source_type:
+                          type: string
+                        token_seed:
+                          type: integer
+                        structures:
+                          type: array
+                          items:
+                            type: object
+                        id:
+                          type: string
+                type: object
+                x-tags:
+                  - Logs
+                x-examples:
+                  Logs Example:
+                    logs:
+                      - logsets_info:
+                          - id: ecca4c14-338d-4452-b842-5fca8c86b9cb
+                            links:
+                              - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/0f5e4d20-fef3-4b91-b4c2-c2573466bbdd'
+                                rel: Self
+                            name: MyLogSet
+                        name: MyLog
+                        user_data:
+                          le_agent_filename: /var/log/anaconda.log
+                          le_agent_follow: 'true'
+                        tokens: []
+                        source_type: AGENT
+                        token_seed: null
+                        structures: []
+                        id: 4e6dadf9-961e-48f4-82cf-452de78eb217
+                      - logsets_info:
+                          - id: 7162e19e-3711-4f63-9833-d042f5c70f85
+                            links:
+                              - href: 'https://us.rest.logs.insight.rapid7.com/management/logsets/3aa5da13-3bb6-4457-ab6c-0d6b01ec892d'
+                                rel: Self
+                            name: MyOtherLogSet
+                        name: MyOtherLog
+                        user_data:
+                          le_agent_filename: ''
+                          le_agent_follow: 'false'
+                        tokens:
+                          - 70347838-87d8-43f7-82cc-fb6f63623893
+                        source_type: TOKEN
+                        token_seed: null
+                        structures: []
+                        id: 7a70d526-b69f-4030-904f-62dfd25d8d03
+                description: 'Returns multiple logs. '
               examples:
                 Get All Logs Response:
                   value:
@@ -1354,7 +3161,72 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Logsets-Response'
+                title: Log Sets-Response
+                type: object
+                x-tags:
+                  - Logsets
+                x-examples:
+                  Logsets Response:
+                    logsets:
+                      - user_data: {}
+                        logs_info:
+                          - id: 4c1e08f2-0398-48a5-9325-ac190e2f79e8
+                            links:
+                              - href: 'https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8'
+                                rel: Self
+                            name: My Log
+                          - id: f15ad4cf-fe7d-4b7a-86b0-924997c1d8be
+                            links:
+                              - href: 'https://us.rest.logs.insight.rapid7.com/management/logs/f15ad4cf-fe7d-4b7a-86b0-924997c1d8be'
+                                rel: Self
+                            name: My Other Log
+                        description: ''
+                        id: 814241d4-a14a-4c98-b059-b30978baf951
+                        name: My LogSet
+                      - user_data: {}
+                        logs_info: []
+                        description: ''
+                        id: d25737e8-7135-4b48-b0f8-4b4b5b60b358
+                        name: My Empty Log Set
+                properties:
+                  logsets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_data:
+                          type: object
+                        logs_info:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                example: 4c1e08f2-0398-48a5-9325-ac190e2f79e8
+                              links:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    href:
+                                      type: string
+                                      example: 'https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8'
+                                    rel:
+                                      type: string
+                                      example: Self
+                              name:
+                                type: string
+                                example: Logset Data
+                        description:
+                          type: string
+                        id:
+                          type: string
+                          example: 814241d4-a14a-4c98-b059-b30978baf951
+                        name:
+                          type: string
+                          example: My Log Set
+                description: Returns a `logsets` array of multiple objects.
               examples:
                 Get Log Sets Response:
                   value:
@@ -1397,7 +3269,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogSet-Response'
+                title: Log Set-Response
+                type: object
+                x-tags:
+                  - Logsets
+                x-examples:
+                  LogSet Response:
+                    logset:
+                      id: 9fba111c-52c7-4235-9427-5114ef2d99ce
+                      name: My Log Set
+                      description: ''
+                      user_data: {}
+                      logs_info:
+                        - id: 0868a0a4-a939-4a9c-9719-711f6d377021
+                          name: My Log
+                          links:
+                            - rel: Self
+                              href: 'https://us.rest.logs.insight.rapid7.com/management/logs/0868a0a4-a939-4a9c-9719-711f6d377021'
+                properties:
+                  logset:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      user_data:
+                        type: object
+                      logs_info:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  rel:
+                                    type: string
+                                  href:
+                                    type: string
               examples:
                 Log Set Created:
                   value:
@@ -1424,7 +3342,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Create-Logset'
+              title: Create-Logset
+              type: object
+              x-tags:
+                - Logsets
+              x-examples:
+                Create Log Set Example:
+                  logset:
+                    name: MyLogSet2
+                    logs_info:
+                      - id: 63042c50-34a0-421a-aeef-7c313feb944c
+                    user_data: {}
+              properties:
+                logset:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    logs_info:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                    user_data:
+                      type: object
             examples:
               Create Log Sets Example:
                 value:
@@ -1450,7 +3393,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogSet-Response'
+                title: Log Set-Response
+                type: object
+                x-tags:
+                  - Logsets
+                x-examples:
+                  LogSet Response:
+                    logset:
+                      id: 9fba111c-52c7-4235-9427-5114ef2d99ce
+                      name: My Log Set
+                      description: ''
+                      user_data: {}
+                      logs_info:
+                        - id: 0868a0a4-a939-4a9c-9719-711f6d377021
+                          name: My Log
+                          links:
+                            - rel: Self
+                              href: 'https://us.rest.logs.insight.rapid7.com/management/logs/0868a0a4-a939-4a9c-9719-711f6d377021'
+                properties:
+                  logset:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      user_data:
+                        type: object
+                      logs_info:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  rel:
+                                    type: string
+                                  href:
+                                    type: string
               examples:
                 Get Log Set Response:
                   value:
@@ -1477,7 +3466,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogSet-Response'
+                title: Log Set-Response
+                type: object
+                x-tags:
+                  - Logsets
+                x-examples:
+                  LogSet Response:
+                    logset:
+                      id: 9fba111c-52c7-4235-9427-5114ef2d99ce
+                      name: My Log Set
+                      description: ''
+                      user_data: {}
+                      logs_info:
+                        - id: 0868a0a4-a939-4a9c-9719-711f6d377021
+                          name: My Log
+                          links:
+                            - rel: Self
+                              href: 'https://us.rest.logs.insight.rapid7.com/management/logs/0868a0a4-a939-4a9c-9719-711f6d377021'
+                properties:
+                  logset:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      user_data:
+                        type: object
+                      logs_info:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  rel:
+                                    type: string
+                                  href:
+                                    type: string
               examples:
                 Update Log Set Example: {}
       operationId: put-logsets-logsetid
@@ -1492,7 +3527,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Create-Logset'
+              title: Create-Logset
+              type: object
+              x-tags:
+                - Logsets
+              x-examples:
+                Create Log Set Example:
+                  logset:
+                    name: MyLogSet2
+                    logs_info:
+                      - id: 63042c50-34a0-421a-aeef-7c313feb944c
+                    user_data: {}
+              properties:
+                logset:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    logs_info:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                    user_data:
+                      type: object
             examples:
               Update a Log Set:
                 value:
@@ -1612,7 +3672,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Account-Usage'
+                title: Account-Usage
+                properties:
+                  daily_usage:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        usage:
+                          type: integer
+                        day:
+                          type: string
+                  period_usage:
+                    type: integer
+                  period:
+                    type: object
+                    properties:
+                      to:
+                        type: string
+                      from:
+                        type: string
+                  id:
+                    type: string
+                  name:
+                    type: string
+                type: object
+                x-examples:
+                  Account Usage: {}
               examples:
                 Account Usage:
                   value:
@@ -1664,7 +3750,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Log-Usage'
+                title: Log-Usage
+                properties:
+                  usage:
+                    type: object
+                    properties:
+                      daily_usage:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            usage:
+                              type: string
+                            day:
+                              type: string
+                      id:
+                        type: string
+                      period:
+                        type: object
+                        properties:
+                          to:
+                            type: string
+                          from:
+                            type: string
+                type: object
+                x-examples:
+                  Log Usage Example:
+                    usage:
+                      daily_usage:
+                        - usage: '290349'
+                          day: '2018-12-16'
+                        - usage: '285438'
+                          day: '2018-12-17'
+                        - usage: '279626'
+                          day: '2018-12-18'
+                      id: '<Log Key>'
+                      period:
+                        to: '2018-12-18'
+                        from: '2018-12-16'
+                description: ''
               examples:
                 Log Usage Response:
                   value:
@@ -1704,7 +3828,72 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Logs-Usage'
+                title: Logs-Usage
+                type: object
+                x-tags:
+                  - Usage
+                properties:
+                  per_day_usage:
+                    type: object
+                    properties:
+                      usage:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            interval:
+                              type: string
+                            log_usage:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  usage:
+                                    type: integer
+                                  id:
+                                    type: string
+                      period:
+                        type: object
+                        properties:
+                          to:
+                            type: string
+                          from:
+                            type: string
+                      usage_units:
+                        type: string
+                      report_interval:
+                        type: string
+                x-examples:
+                  Logs Usage Example:
+                    per_day_usage:
+                      usage:
+                        - interval: '2018-12-16'
+                          log_usage:
+                            - usage: 8267539
+                              id: b2f37a6f-
+                            - usage: 9289532
+                              id: cec3450b-
+                            - usage: 12627779
+                              id: adc221c6-
+                        - interval: '2018-12-17'
+                          log_usage:
+                            - usage: 7648949
+                              id: 50499f85-
+                            - usage: 7764258
+                              id: b2f37a6f-
+                        - interval: '2018-12-18'
+                          log_usage:
+                            - usage: 8388395
+                              id: 50499f85-
+                            - usage: 8596388
+                              id: cec3450b-
+                            - usage: 12257438
+                              id: adc221c6-
+                      period:
+                        to: '2018-12-18'
+                        from: '2018-12-16'
+                      usage_units: bytes
+                      report_interval: day
               examples:
                 Get All Logs Response:
                   value:
