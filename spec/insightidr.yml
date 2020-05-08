@@ -466,7 +466,7 @@ paths:
          - Read Only
   /management/logsets:
     get:
-      summary: Get Logsets
+      summary: Get All Log Sets
       tags:
         - Logsets
       responses:
