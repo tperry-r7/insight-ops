@@ -1630,6 +1630,8 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
     put:
       description: Add an item to IP group
       summary: Add an item to IP group
@@ -1680,6 +1682,8 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
     delete:
       description: Delete an item from IP group
       summary: Delete an item from IP group
