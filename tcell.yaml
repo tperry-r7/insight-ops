@@ -940,16 +940,6 @@ paths:
         '200':
           description: Details for the provided package
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    id: 2579938
-                    vendor: org.apache.tomcat
-                    name: tomcat-catalina-ha
-                    version: 7.0.69
-                    build: unknown
-                    created_at: 1497046105495
             application/json:
               schema:
                 title: Package Details
@@ -980,6 +970,15 @@ paths:
                   - version
                   - build
                   - created_at
+              examples:
+                Get package details example:
+                  value:
+                    id: 2579938
+                    vendor: org.apache.tomcat
+                    name: tomcat-catalina-ha
+                    version: 7.0.69
+                    build: unknown
+                    created_at: 1497046105495
         '404':
           description: No package with the provided ID was found
       security:
