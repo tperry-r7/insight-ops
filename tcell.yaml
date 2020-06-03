@@ -278,6 +278,7 @@ paths:
                         name: My Other App
       security:
         - APIKeyHeader: []
+      parameters: []
     post:
       description: Create an application
       summary: Create app
@@ -341,13 +342,6 @@ paths:
         '200':
           description: An array of tags for the chosen app
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    tags:
-                      - production
-                      - web-api
             application/json:
               schema:
                 title: Tags response
@@ -358,6 +352,12 @@ paths:
                     type: array
                     items:
                       type: string
+              examples:
+                Array of tags:
+                  value:
+                    tags:
+                      - production
+                      - web-api
       security:
         - APIKeyHeader: []
     post:
@@ -377,13 +377,23 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/AddTagsBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTagsBody'
+            examples:
+              Add tags request example:
+                value:
+                  tags:
+                    - string
+        description: ''
       responses:
         '200':
           description: Successfully added tags
       security:
         - APIKeyHeader: []
     put:
-      description: All the tags posted in the body will be added to the set of tags the app already has
+      description: All the tags posted in the body will be added to the set of tags the app already has.
       summary: Add tags
       operationId: UpdateTags
       tags:
@@ -399,6 +409,15 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/AddTagsBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTagsBody'
+            examples:
+              Add tags example:
+                value:
+                  tags:
+                    - string
       responses:
         '200':
           description: Successfully updated tags
@@ -421,6 +440,15 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/AddTagsBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTagsBody'
+            examples:
+              Delete tags example:
+                value:
+                  tags:
+                    - string
       responses:
         '200':
           description: Successfully removed tags
@@ -2573,6 +2601,33 @@ components:
       required:
         - total
         - configs
+    AddTagsBody:
+      content:
+        application/json:
+          schema:
+            title: Modify tags for application
+            type: object
+            properties:
+              tags:
+                description: 'List of strings, containing the tags to be added or removed from the application'
+                type: array
+                items:
+                  type: string
+            required:
+              - tags
+      x-examples:
+        example-1:
+          tags:
+            - string
+      type: object
+      properties:
+        tags:
+          type: array
+          description: 'List of strings, containing the tags to be added or removed from the application'
+          items: {}
+      required:
+        - tags
+      title: AddTagsBody
 x-samples-enabled: true
 x-samples-languages:
   - curl
