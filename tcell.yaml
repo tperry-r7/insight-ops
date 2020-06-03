@@ -37,24 +37,6 @@ paths:
         '200':
           description: 'List of API Keys.  The scopes list integers indicate the type of key, where 1 is a ServerAgent key, 2 is a JS Agent key, 101 is a Read-Only API key, and 102 is a Full Access API key.'
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    total: 2
-                    keys:
-                      - name: My ServerAgent Key
-                        token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
-                        scopes:
-                          - 1
-                        createdAt: 1507215994161
-                        lastUsedAt: 1507215994161
-                      - name: My JS Agent Key
-                        token: AQHRBAFw5bpAq4hFfJWYv2U8tWSehkljUu7KRw-DqGz4oiLAwQIE7BgCttph9ytqDRQ49ea
-                        scopes:
-                          - 2
-                        createdAt: 1510572886742
-                        lastUsedAt: 1510739815690
             application/json:
               schema:
                 title: API key list
@@ -96,6 +78,23 @@ paths:
                 required:
                   - total
                   - keys
+              examples:
+                List of API keys example:
+                  value:
+                    total: 2
+                    keys:
+                      - name: My ServerAgent Key
+                        token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
+                        scopes:
+                          - 1
+                        createdAt: 1507215994161
+                        lastUsedAt: 1507215994161
+                      - name: My JS Agent Key
+                        token: AQHRBAFw5bpAq4hFfJWYv2U8tWSehkljUu7KRw-DqGz4oiLAwQIE7BgCttph9ytqDRQ49ea
+                        scopes:
+                          - 2
+                        createdAt: 1510572886742
+                        lastUsedAt: 1510739815690
       security:
         - APIKeyHeader: []
     post:
@@ -126,16 +125,6 @@ paths:
         '200':
           description: New API key
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    name: My ServerAgent Key
-                    token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
-                    scopes:
-                      - 1
-                    createdAt: 1507215994161
-                    lastUsedAt: 1507215994161
             application/json:
               schema:
                 title: Create new key body
@@ -164,6 +153,15 @@ paths:
                   - token
                   - scope
                   - createdAt
+              examples:
+                Create API key example:
+                  value:
+                    name: My ServerAgent Key
+                    token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
+                    scopes:
+                      - 1
+                    createdAt: 1507215994161
+                    lastUsedAt: 1507215994161
       security:
         - APIKeyHeader: []
   '/keys/{token}':
@@ -205,12 +203,6 @@ paths:
         '200':
           description: A JSON object with the app ID and the user-friendly app display name
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    id: MyApp-QX7E7
-                    name: My App
             application/json:
               schema:
                 title: App Details
@@ -225,6 +217,11 @@ paths:
                 required:
                   - id
                   - name
+              examples:
+                Get app name and ID example:
+                  value:
+                    id: MyApp-QX7E7
+                    name: My App
         '404':
           description: No app with the provided ID was found
       security:
@@ -375,23 +372,16 @@ paths:
           description: The app ID
           schema:
             type: string
-      requestBody:
-        $ref: '#/components/requestBodies/AddTagsBody'
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddTagsBody'
-            examples:
-              Add tags request example:
-                value:
-                  tags:
-                    - string
-        description: ''
       responses:
         '200':
           description: Successfully added tags
       security:
         - APIKeyHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTagsBody'
     put:
       description: All the tags posted in the body will be added to the set of tags the app already has.
       summary: Add tags
@@ -1025,24 +1015,6 @@ paths:
         '200':
           description: A list of all packages matching the provided criteria
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    total: 2
-                    packages:
-                      - id: 2579938
-                        vendor: org.apache.tomcat
-                        name: tomcat-catalina-ha
-                        version: 7.0.69
-                        build: unknown
-                        created_at: 1497046105495
-                      - id: 2579939
-                        vendor: org.apache.tomcat
-                        name: tomcat-juli
-                        version: 7.0.69
-                        build: unknown
-                        created_at: 1497046105495
             application/json:
               schema:
                 title: Package list
@@ -1086,6 +1058,23 @@ paths:
                 required:
                   - total
                   - packages
+              examples:
+                List packages example:
+                  value:
+                    total: 2
+                    packages:
+                      - id: 2579938
+                        vendor: org.apache.tomcat
+                        name: tomcat-catalina-ha
+                        version: 7.0.69
+                        build: unknown
+                        created_at: 1497046105495
+                      - id: 2579939
+                        vendor: org.apache.tomcat
+                        name: tomcat-juli
+                        version: 7.0.69
+                        build: unknown
+                        created_at: 1497046105495
       security:
         - APIKeyHeader: []
   '/apps/{app_id}/packages/vulnerable_packages':
@@ -1118,32 +1107,6 @@ paths:
         '200':
           description: "A list of all vulnerable packages for the app matching the provided criteria. If there are no vulnerabilities, the endpoint returns an empty 'vulnerable_packages' list and 'total' as 0."
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    total: 1
-                    vulnerable_packages:
-                      - name: tomcat-catalina-ha
-                        vendor: org.apache.tomcat
-                        version: 7.0.69
-                        vulnerabilities:
-                          - cvss: 4.3
-                            description: The Realm implementations in Apache Tomcat did not process the supplied password if the supplied user name did not exist.
-                            matchedCPE: 'cpe:/a:apache:tomcat:7.0.69'
-                            cve: 2016-0762
-                            cwe: 'CWE-264 Permissions, Privileges, and Access Controls'
-                            references:
-                              - name: '[announce] 20161027 [SECURITY] CVE-2016-0762 Apache Tomcat Realm Timing Attack'
-                                source: MLIST
-                                url: 'https://lists.apache.org/thread.html/1872f96bad43647832bdd84a408794cd06d9cbb557af63085ca10009@%3Cannounce.tomcat.apache.org%3E'
-                              - name: 'RHSA-2017:0455'
-                                source: REDHAT
-                                url: 'https://access.redhat.com/errata/RHSA-2017:0455'
-                            title: 'CWE-264 Permissions, Privileges, and Access Controls'
-                            id: CVE-2016-0762
-                            severity: medium
-                            url: 'http://rhn.redhat.com/errata/RHSA-2017-0457.html'
             application/json:
               schema:
                 title: Vulnerable Package list
@@ -1209,6 +1172,31 @@ paths:
                 required:
                   - total
                   - vulnerable_packages
+              examples:
+                List vulnerable packages example:
+                  value:
+                    total: 1
+                    vulnerable_packages:
+                      - name: tomcat-catalina-ha
+                        vendor: org.apache.tomcat
+                        version: 7.0.69
+                        vulnerabilities:
+                          - cvss: 4.3
+                            description: The Realm implementations in Apache Tomcat did not process the supplied password if the supplied user name did not exist.
+                            matchedCPE: 'cpe:/a:apache:tomcat:7.0.69'
+                            cve: 2016-0762
+                            cwe: 'CWE-264 Permissions, Privileges, and Access Controls'
+                            references:
+                              - name: '[announce] 20161027 [SECURITY] CVE-2016-0762 Apache Tomcat Realm Timing Attack'
+                                source: MLIST
+                                url: 'https://lists.apache.org/thread.html/1872f96bad43647832bdd84a408794cd06d9cbb557af63085ca10009@%3Cannounce.tomcat.apache.org%3E'
+                              - name: 'RHSA-2017:0455'
+                                source: REDHAT
+                                url: 'https://access.redhat.com/errata/RHSA-2017:0455'
+                            title: 'CWE-264 Permissions, Privileges, and Access Controls'
+                            id: CVE-2016-0762
+                            severity: medium
+                            url: 'http://rhn.redhat.com/errata/RHSA-2017-0457.html'
       security:
         - APIKeyHeader: []
   '/apps/{app_id}/sources/{source}/table':
@@ -1316,9 +1304,9 @@ paths:
         '200':
           description: A list of matching events.
           content:
-            '1':
+            application/json:
               examples:
-                response:
+                Get events response:
                   value:
                     total: 1
                     table:
@@ -1354,8 +1342,11 @@ paths:
                         app_id: DemoB-QX7E7
                         route: 'post /some/path/*'
                         time: 1502950866015
+              schema:
+                $ref: '#/components/schemas/Get-Events-Reponse'
       security:
         - APIKeyHeader: []
+    parameters: []
   '/apps/{app_id}/configs/latest':
     get:
       description: Fetches the currently active app config.
@@ -1419,6 +1410,15 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/PostBlacklistedIpBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBlacklistedIpBody'
+            examples:
+              Add ips to blacklisted list example:
+                value:
+                  ips:
+                    - 198.51.100.42
       responses:
         '200':
           description: The new config id
@@ -1453,9 +1453,20 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/PostBlacklistedIpBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBlacklistedIpBody'
+            examples:
+              Remove ips from blacklisted list example:
+                value:
+                  ips:
+                    - 198.51.100.42
+        description: ''
       responses:
         '200':
           description: The new config id
+          headers: {}
       security:
         - APIKeyHeader: []
   '/apps/{app_id}/configs':
@@ -1582,25 +1593,6 @@ paths:
         '200':
           description: Details of all IP groups
           content:
-            '1':
-              examples:
-                response:
-                  value:
-                    groups:
-                      - name: newipgroup
-                        items:
-                          - type: ip
-                            value: 1.3.5.6
-                          - type: cidr
-                            value: 1.3.5.7/20
-                        note:
-                          note: IP group description
-                          userId: ab000538-0000-aaaa-ab12-000000aaaaaa
-                      - name: MyList
-                        items:
-                          - type: ip
-                            value: 127.0.0.1
-                    version: 1
             application/json:
               schema:
                 title: IP Groups List with details
@@ -1635,6 +1627,24 @@ paths:
                               type: string
                   version:
                     type: number
+              examples:
+                List IP Groups example:
+                  value:
+                    groups:
+                      - name: newipgroup
+                        items:
+                          - type: ip
+                            value: 1.3.5.6
+                          - type: cidr
+                            value: 1.3.5.7/20
+                        note:
+                          note: IP group description
+                          userId: ab000538-0000-aaaa-ab12-000000aaaaaa
+                      - name: MyList
+                        items:
+                          - type: ip
+                            value: 127.0.0.1
+                    version: 1
       security:
         - APIKeyHeader: []
     post:
@@ -1722,13 +1732,9 @@ paths:
         '404':
           description: The IP group could not be found
           content:
-            message:
+            application/json:
               examples:
-                response:
-                  value: IPGroup could not be found
-            errors:
-              examples:
-                response:
+                The IP group could not be found:
                   value:
                     - code: missing
                       field: name
@@ -1762,13 +1768,9 @@ paths:
         '404':
           description: The IP group could not be found
           content:
-            message:
+            application/json:
               examples:
-                response:
-                  value: Resource not be found
-            errors:
-              examples:
-                response:
+                Resource not be found:
                   value:
                     - code: missing
                       field: name
@@ -1820,6 +1822,7 @@ paths:
                     properties:
                       id:
                         type: integer
+              examples: {}
         '400':
           description: Invalid request. Check that the body is formatted correctly
           content:
@@ -1834,11 +1837,7 @@ paths:
           content:
             message:
               examples:
-                response:
-                  value: Resource not be found
-            errors:
-              examples:
-                response:
+                Resource not be found:
                   value:
                     - code: missing
                       field: name
@@ -1858,6 +1857,11 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/PutItemInIPGroupBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutItemInIPGroupBody'
+        description: ''
       responses:
         '200':
           description: A unique id for the successful operation
@@ -1883,13 +1887,9 @@ paths:
         '404':
           description: The IP group could not be found
           content:
-            message:
+            application/json:
               examples:
-                response:
-                  value: Resource not be found
-            errors:
-              examples:
-                response:
+                Resource not be found:
                   value:
                     - code: missing
                       field: name
@@ -1909,6 +1909,11 @@ paths:
             type: string
       requestBody:
         $ref: '#/components/requestBodies/PutItemInIPGroupBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutItemInIPGroupBody'
+        description: ''
       responses:
         '200':
           description: A unique id for the successful operation or a message that the item doesnt exist in the IP group
@@ -1936,13 +1941,9 @@ paths:
         '404':
           description: The IP group could not be found
           content:
-            message:
+            application/json:
               examples:
-                response:
-                  value: Resource not be found
-            errors:
-              examples:
-                response:
+                Resource not be found:
                   value:
                     - code: missing
                       field: name
@@ -2601,32 +2602,121 @@ components:
         - total
         - configs
     AddTagsBody:
-      content:
-        application/json:
-          schema:
-            title: Modify tags for application
-            type: object
-            properties:
-              tags:
-                description: 'List of strings, containing the tags to be added or removed from the application'
-                type: array
-                items:
-                  type: string
-            required:
-              - tags
-      x-examples:
-        example-1:
-          tags:
-            - hello
+      title: Modify tags for application
       type: object
       properties:
         tags:
-          type: array
           description: 'List of strings, containing the tags to be added or removed from the application'
-          items: {}
+          type: array
+          items:
+            type: string
       required:
         - tags
-      title: AddTagsBody
+    Get-Events-Reponse:
+      title: Get Events Reponse
+      type: object
+      properties:
+        total:
+          type: integer
+        table:
+          type: array
+          items:
+            type: object
+            properties:
+              method:
+                type: string
+              city:
+                type: string
+              full_uri:
+                type: string
+              ip:
+                type: string
+              parameter:
+                type: string
+              location:
+                type: object
+                properties:
+                  location:
+                    type: object
+                    properties:
+                      latitude:
+                        type: number
+                      longitude:
+                        type: number
+                      city:
+                        type: string
+                      country:
+                        type: string
+                      iso-code:
+                        type: string
+                  is-tor:
+                    type: boolean
+                  asn:
+                    type: object
+                    properties:
+                      number:
+                        type: string
+                      name:
+                        type: string
+              session_id:
+                type: string
+              path:
+                type: string
+              detection_point:
+                type: string
+              payload:
+                type: string
+              country:
+                type: string
+              stripped_uri:
+                type: string
+              user_id:
+                type: integer
+              to:
+                type: integer
+              pattern_id:
+                type: string
+              route_id:
+                type: integer
+              transaction_id:
+                type: integer
+              id:
+                type: string
+              from:
+                type: integer
+              app_id:
+                type: string
+              route:
+                type: string
+              time:
+                type: integer
+    PostBlacklistedIpBody:
+      title: PostBlacklistedIpBody
+      type: object
+      description: Modify blacklisted IPs for application
+      properties:
+        ips:
+          type: array
+          description: 'List of strings, containing the IP addresses to be added or removed from the blacklist for the application'
+          items:
+            type: string
+            format: ipv4
+      required:
+        - ips
+    PutItemInIPGroupBody:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - ip
+            - cidr
+        value:
+          type: string
+      required:
+        - type
+        - value
+required: true
 x-samples-enabled: true
 x-samples-languages:
   - curl
