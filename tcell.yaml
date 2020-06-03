@@ -3,7 +3,9 @@ info:
   version: '1.0'
   title: tCell
   description: |-
-    ## How to test API endpoints
+    ## How to test API endpoints 
+    [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/0d449b7ecaa1db392199)
+    
      This tCell API documentation is responsive and you can use it to test the API endpoints before calling them in your applications. To test an API endpoint:
 
      1. Go to the API Key Management page from your Insight Platform account.
