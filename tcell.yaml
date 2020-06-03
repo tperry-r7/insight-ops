@@ -1,0 +1,2584 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: tCell
+  description: |-
+    ## How to test API endpoints
+     This tCell API documentation is responsive and you can use it to test the API endpoints before calling them in your applications. To test an API endpoint:
+
+     1. Go to the API Key Management page from your Insight Platform account.
+     2. Select the User Key tab.
+     3. Click the New User Key button and create a user key with the appropriate permissions.
+
+     ![Platform User Key](https://files.readme.io/b71caf8-Selection_142.png)
+
+     4. Copy the new API Key and store it carefully. For security reasons, you will not be able to view your key afterwards.
+     5. On this API documentation website, use the left navigation bar to open the API endpoint you wish to test.
+
+     ![Readme Docs Image Replace](https://files.readme.io/e27f334-How_to_use_Readme_API_tool.png)
+
+     6. If the API endpoint requires parameters, enter the required and optional parameters in the “BODY PARAMS” and “PATH PARAMS” sections.
+     7. Click the authentication button that’s beside the Try It button and has an icon of a person with a lock on the side. You will be prompted for the X-API-Key. Enter your API Key.
+     8. Click the Try It button.
+
+     If all of the information is correct you should get a 200 OK with the response below it.
+x-proxy-enabled: false
+x-explorer-enabled: true
+paths:
+  /keys:
+    get:
+      description: 'Fetches a list of all API keys for the customer environment, including agent keys and api keys for programmatic API acccess'
+      summary: List of API keys
+      operationId: ListKeys
+      tags:
+        - keys
+        - api keys
+      responses:
+        '200':
+          description: 'List of API Keys.  The scopes list integers indicate the type of key, where 1 is a ServerAgent key, 2 is a JS Agent key, 101 is a Read-Only API key, and 102 is a Full Access API key.'
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 2
+                    keys:
+                      - name: My ServerAgent Key
+                        token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
+                        scopes:
+                          - 1
+                        createdAt: 1507215994161
+                        lastUsedAt: 1507215994161
+                      - name: My JS Agent Key
+                        token: AQHRBAFw5bpAq4hFfJWYv2U8tWSehkljUu7KRw-DqGz4oiLAwQIE7BgCttph9ytqDRQ49ea
+                        scopes:
+                          - 2
+                        createdAt: 1510572886742
+                        lastUsedAt: 1510739815690
+            application/json:
+              schema:
+                title: API key list
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  keys:
+                    description: A list of API keys
+                    type: array
+                    items:
+                      title: Create new key body
+                      type: object
+                      properties:
+                        name:
+                          description: Name of the API key
+                          type: string
+                        token:
+                          description: The API Key token
+                          type: string
+                        scope:
+                          description: 'The scope of the API key (1 is for Server Agent, 2 is for JS Agent)'
+                          type: integer
+                          enum:
+                            - 1
+                            - 2
+                        createdAt:
+                          description: UNIX timestamp (in ms) when the key was created
+                          type: integer
+                        lastUsedAt:
+                          description: UNIX timestamp (in ms) when the key was last used
+                          type: integer
+                      required:
+                        - name
+                        - token
+                        - scope
+                        - createdAt
+                required:
+                  - total
+                  - keys
+      security:
+        - APIKeyHeader: []
+    post:
+      description: Create an API or agent key
+      summary: Create API key
+      operationId: CreateKey
+      tags:
+        - keys
+        - create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Create new key body
+              type: object
+              properties:
+                name:
+                  description: Name of the API key
+                  type: string
+                scope:
+                  description: 'The scope of the API key which may be one of "Server Agent", "Web Server Agent", "JSAgent", "User Read-Only"'
+                  type: string
+              required:
+                - name
+                - scope
+        required: true
+      responses:
+        '200':
+          description: New API key
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    name: My ServerAgent Key
+                    token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
+                    scopes:
+                      - 1
+                    createdAt: 1507215994161
+                    lastUsedAt: 1507215994161
+            application/json:
+              schema:
+                title: Create new key body
+                type: object
+                properties:
+                  name:
+                    description: Name of the API key
+                    type: string
+                  token:
+                    description: The API Key token
+                    type: string
+                  scope:
+                    description: 'The scope of the API key (1 is for Server Agent, 2 is for JS Agent)'
+                    type: integer
+                    enum:
+                      - 1
+                      - 2
+                  createdAt:
+                    description: UNIX timestamp (in ms) when the key was created
+                    type: integer
+                  lastUsedAt:
+                    description: UNIX timestamp (in ms) when the key was last used
+                    type: integer
+                required:
+                  - name
+                  - token
+                  - scope
+                  - createdAt
+      security:
+        - APIKeyHeader: []
+  '/keys/{token}':
+    delete:
+      description: Delete an API or agent key
+      summary: Remove API Key
+      operationId: RemoveKey
+      tags:
+        - keys
+        - delete
+        - remove
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: The API Token that you want to delete ( the token field in the key list )
+          schema:
+            type: string
+      responses:
+        '200':
+          description: API Key was successfully removed
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}':
+    get:
+      description: Fetches the display-name and App ID for the app with the given ID.
+      summary: Get app name and ID
+      operationId: GetAppDetails
+      tags:
+        - apps
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A JSON object with the app ID and the user-friendly app display name
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    id: MyApp-QX7E7
+                    name: My App
+            application/json:
+              schema:
+                title: App Details
+                type: object
+                properties:
+                  id:
+                    description: The app ID
+                    type: string
+                  name:
+                    description: The name of the app
+                    type: string
+                required:
+                  - id
+                  - name
+        '404':
+          description: No app with the provided ID was found
+      security:
+        - APIKeyHeader: []
+  /apps:
+    get:
+      description: Fetches app name and app ID for all apps in a customer environment.
+      summary: List apps
+      operationId: ListApps
+      tags:
+        - apps
+      responses:
+        '200':
+          description: Details for all apps
+          content:
+            application/json:
+              schema:
+                title: App list
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  apps:
+                    description: A list of apps
+                    type: array
+                    items:
+                      title: App Details
+                      type: object
+                      properties:
+                        id:
+                          description: The app ID
+                          type: string
+                        name:
+                          description: The name of the app
+                          type: string
+                      required:
+                        - id
+                        - name
+                required:
+                  - total
+                  - apps
+              examples:
+                List Apps Response:
+                  value:
+                    total: 2
+                    apps:
+                      - id: MyApp-QX7E7
+                        name: My App
+                      - id: MyOtherApp-j9Gye
+                        name: My Other App
+      security:
+        - APIKeyHeader: []
+    post:
+      description: Create an application
+      summary: Create app
+      operationId: CreateApp
+      tags:
+        - apps
+        - create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Create new application body
+              type: object
+              properties:
+                app_display_name:
+                  description: The display name of your new application (An app id will be derived from this name)
+                  type: string
+              required:
+                - app_display_name
+            examples:
+              Create app request example:
+                value:
+                  app_display_name: string
+        required: true
+        description: ''
+      responses:
+        '200':
+          description: The application ID for the newly created tCell app
+          content:
+            application/json:
+              schema:
+                title: New application
+                type: object
+                properties:
+                  app_id:
+                    description: The ID of the newly created Application
+                    type: string
+                required:
+                  - app_id
+              examples:
+                Create app response example:
+                  value:
+                    app_id: MyApp-QX7E7
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/tags':
+    get:
+      description: Fetch the set of tags for a tCell app
+      summary: Get the Tags for an app
+      operationId: ListTagsForApp
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      tags:
+        - apps
+      responses:
+        '200':
+          description: An array of tags for the chosen app
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    tags:
+                      - production
+                      - web-api
+            application/json:
+              schema:
+                title: Tags response
+                type: object
+                properties:
+                  tags:
+                    description: 'List of strings, presenting the tags for the application'
+                    type: array
+                    items:
+                      type: string
+      security:
+        - APIKeyHeader: []
+    post:
+      description: 'Assign a complete new set of tags to an app, removing any previously existing tags.'
+      summary: Change tags
+      operationId: AddTags
+      tags:
+        - app
+        - tags
+        - add
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/AddTagsBody'
+      responses:
+        '200':
+          description: Successfully added tags
+      security:
+        - APIKeyHeader: []
+    put:
+      description: All the tags posted in the body will be added to the set of tags the app already has
+      summary: Add tags
+      operationId: UpdateTags
+      tags:
+        - app
+        - tags
+        - update
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/AddTagsBody'
+      responses:
+        '200':
+          description: Successfully updated tags
+      security:
+        - APIKeyHeader: []
+    delete:
+      description: Remove the tags provided in the body from the application
+      summary: Remove tags
+      operationId: RemoveTags
+      tags:
+        - app
+        - tags
+        - remove
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/AddTagsBody'
+      responses:
+        '200':
+          description: Successfully removed tags
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/agents/{agent_id}':
+    get:
+      description: Fetches details for the agent with the given ID.
+      summary: Get agent details
+      operationId: GetAgentDetails
+      tags:
+        - agents
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          description: The agent ID
+          schema:
+            type: string
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Details for the provided agent, including the agent type (ApacheAgent, JVMAgent, etc), version string, earliest and most recent time seen, and whether the agent is currently known to be actively sending data to the tCell service.'
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    id: webserver1
+                    type: JVMAgent
+                    version: 1.2.2
+                    from: 1497046105489
+                    to: 1501553245386
+                    active: false
+            application/json:
+              schema:
+                title: agent
+                type: object
+                properties:
+                  id:
+                    description: The agent ID
+                    type: string
+                  type:
+                    description: 'The agent type (`JVMagent`, `ruby`, etc)'
+                    type: string
+                  version:
+                    description: The version of the agent
+                    type: string
+                  from:
+                    description: The Unix timestamp (in ms) when the agent was first seen
+                    type: integer
+                  to:
+                    description: The Unix timestamp (in ms) when the agent was last seen
+                    type: integer
+                  last_process_id:
+                    description: The most recent process ID associated with the agent
+                    type: string
+                  active:
+                    description: Whether or not the agent is currently active
+                    type: boolean
+                required:
+                  - id
+                  - type
+                  - version
+                  - from
+                  - to
+                  - last_process_id
+                  - active
+        '404':
+          description: No agent with the provided ID was found
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/agents':
+    get:
+      description: Fetches details for all seen agents (optionally matching the provided criteria).
+      summary: List agents
+      operationId: ListAgents
+      tags:
+        - agents
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          description: The beginning (earliest endpoint) of a time window for known agents.  Agents which connected to the tCell service outside this window will not be returned.  Value in milliseconds from UNIX epoch.  Data is not available for over 30 days into the past.
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: false
+          description: The end (most recent endpoint)  of a time window for known agents.  Agents which connected to the tCell service outside this window will not be returned.  Value in milliseconds from UNIX epoch.
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: 'Specify number of returned results per page, defaults to 10.'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: 'Select which page is returned, default/first page is 1.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of all agents matching the provided criteria
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 2
+                    agents:
+                      - id: my-agent0
+                        type: JVMAgent
+                        version: 0.2.2
+                        from: 1497046105489
+                        to: 1501553245386
+                        active: false
+                      - id: my-agent1
+                        type: JVMAgent
+                        version: 0.2.3
+                        from: 1497046105496
+                        to: 1497369265492
+                        active: true
+            application/json:
+              schema:
+                title: Apps Agents response
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  agents:
+                    description: A list of agents
+                    type: array
+                    items:
+                      title: agent
+                      type: object
+                      properties:
+                        id:
+                          description: The agent ID
+                          type: string
+                        type:
+                          description: 'The agent type (`JVMagent`, `ruby`, etc)'
+                          type: string
+                        version:
+                          description: The version of the agent
+                          type: string
+                        from:
+                          description: The Unix timestamp (in ms) when the agent was first seen
+                          type: integer
+                        to:
+                          description: The Unix timestamp (in ms) when the agent was last seen
+                          type: integer
+                        last_process_id:
+                          description: The most recent process ID associated with the agent
+                          type: string
+                        active:
+                          description: Whether or not the agent is currently active
+                          type: boolean
+                      required:
+                        - id
+                        - type
+                        - version
+                        - from
+                        - to
+                        - last_process_id
+                        - active
+                required:
+                  - total
+                  - agents
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/routes/{route_id}':
+    get:
+      description: Fetches details for the route with the given ID.
+      summary: Get route details
+      operationId: GetRouteDetails
+      tags:
+        - routes
+      parameters:
+        - name: route_id
+          in: path
+          required: true
+          description: The route ID
+          schema:
+            type: string
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Details for the provided route, including the route id, http method, route pattern used by the framework, and a code signature for the controller.'
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    id: 1029059990
+                    method: get
+                    pattern: /path/to/my/route
+                    controller: my.controller
+            application/json:
+              schema:
+                title: Route Details
+                type: object
+                properties:
+                  id:
+                    description: The ID of the route
+                    type: integer
+                  method:
+                    description: 'The HTTP method (GET, POST, ...) for the route'
+                    type: string
+                  pattern:
+                    description: The path pattern for the route
+                    type: string
+                  controller:
+                    description: The name of the controller associated with the route (when applicable)
+                    type: string
+                required:
+                  - id
+                  - method
+                  - pattern
+        '404':
+          description: No route with the provided ID was found
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/routes':
+    get:
+      description: Fetches details for all seen routes (matching the provided criteria).
+      summary: List routes
+      operationId: ListRoutes
+      tags:
+        - routes
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          description: The beginning (earliest endpoint) of a time window for known routes.  Routes reported by agents outside this window will not be returned.  Value in milliseconds from UNIX epoch.  Data is not available for over 30 days into the past.
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: false
+          description: The end (most recent endpoint)  of a time window for known routes.  Routes reported by agents outside this window will not be returned.  Value in milliseconds from UNIX epoch.
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: 'The number of results to be returned per page, defaults to 10.'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: 'Select which page is returned, default/first page is 1.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'A list of details for all routes matching the provided criteria including the route id, http method, route pattern used by the framework, and a code signature for the controller.'
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 2
+                    routes:
+                      - id: 1029059990
+                        method: get
+                        pattern: /path/to/my/route
+                        controller: my.controller
+                      - id: 1956030401
+                        method: post
+                        pattern: /path/to/my/other/route
+                        controller: my.other.controller
+            application/json:
+              schema:
+                title: Apps Routes response
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  routes:
+                    description: A list of routes
+                    type: array
+                    items:
+                      title: Route Details
+                      type: object
+                      properties:
+                        id:
+                          description: The ID of the route
+                          type: integer
+                        method:
+                          description: 'The HTTP method (GET, POST, ...) for the route'
+                          type: string
+                        pattern:
+                          description: The path pattern for the route
+                          type: string
+                        controller:
+                          description: The name of the controller associated with the route (when applicable)
+                          type: string
+                      required:
+                        - id
+                        - method
+                        - pattern
+                required:
+                  - total
+                  - routes
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/inline_scripts/{inline_script_id}':
+    get:
+      description: Fetches details for the inline script with the given ID.
+      summary: Get inline script details
+      operationId: GetInlineScriptDetails
+      tags:
+        - inline scripts
+      parameters:
+        - name: inline_script_id
+          in: path
+          required: true
+          description: The inline script ID
+          schema:
+            type: string
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Details for the given inline script, including approved: whether the script is marked as intended;  template: the script text with literals replaced by ?; created_at: when the script was added to the tCell database; last_reported_at: when the jsagent last reported this script.'
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    id: sha256-A08OmFGXGZjnMgeFRMlrNsPQHO33yqMyNZ1vHYNWcBQ=
+                    approved: false
+                    template: alert(?)
+                    created_at: 1497046027847
+                    'last_reported_at"': 1502944538974
+            application/json:
+              schema:
+                title: inline_script
+                example:
+                  id: ScriptId
+                type: object
+                properties:
+                  id:
+                    description: ''
+                    type: string
+                required:
+                  - id
+        '404':
+          description: No inline script with the provided ID was found
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/inline_scripts':
+    get:
+      description: Fetches details for all seen inline scripts (matching the provided criteria).
+      summary: List inline scripts
+      operationId: ListInlineScripts
+      tags:
+        - inline scripts
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          description: The beginning (earliest endpoint) of a time window for inline scripts.  Inline scripts reported by agents outside this window will not be returned.  Value in milliseconds from UNIX epoch.  Data is not available for over 30 days into the past.
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: false
+          description: The end (most recent endpoint) of a time window for inline scripts.  Inline scripts reported by agents outside this window will not be returned.  Value in milliseconds from UNIX epoch.
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: 'Specify number of returned results per page, defaults to 10.'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: 'Select which page is returned, default/first page is 1.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of all inline scripts matching the provided criteria
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 2
+                    inline_scripts:
+                      - id: sha256-A08OmFGXGZjnMgeFRMlrNsPQHO33yqMyNZ1vHYNWcBQ=
+                        approved: false
+                        created_at: 1497046027847
+                        last_reported_at: 1502944422734
+                      - id: sha256-rO8xIoxDJxqDH_X33TtZFlHjp5y6BgfT5QBUMSuvQfg=
+                        approved: false
+                        created_at: 1497048192298
+                        last_reported_at: 1502944404240
+            application/json:
+              schema:
+                title: Apps Inline Scripts response
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  inline_scripts:
+                    description: A list of inline scripts
+                    type: array
+                    items:
+                      title: inline_script
+                      example:
+                        id: ScriptId
+                      type: object
+                      properties:
+                        id:
+                          description: ''
+                          type: string
+                      required:
+                        - id
+                required:
+                  - total
+                  - inline_scripts
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/packages/{package_id}':
+    get:
+      description: Fetches details for the package with the given ID.
+      summary: Get package details
+      operationId: GetPackageDetails
+      tags:
+        - packages
+      parameters:
+        - name: package_id
+          in: path
+          required: true
+          description: The package ID
+          schema:
+            type: string
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details for the provided package
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    id: 2579938
+                    vendor: org.apache.tomcat
+                    name: tomcat-catalina-ha
+                    version: 7.0.69
+                    build: unknown
+                    created_at: 1497046105495
+            application/json:
+              schema:
+                title: Package Details
+                type: object
+                properties:
+                  id:
+                    description: The ID of the package
+                    type: integer
+                  vendor:
+                    description: The vendor providing the package
+                    type: string
+                  name:
+                    description: The name of the package
+                    type: string
+                  version:
+                    description: The version of the package
+                    type: string
+                  build:
+                    description: The build ID of the package
+                    type: string
+                  created_at:
+                    description: Unix timestamp (in ms) when the package was first seen
+                    type: integer
+                required:
+                  - id
+                  - vendor
+                  - name
+                  - version
+                  - build
+                  - created_at
+        '404':
+          description: No package with the provided ID was found
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/packages':
+    get:
+      description: "Fetches details for all seen packages (matching the provided criteria). If a 'from' and 'to' timestamp is not provided the timeframe is considered to be the past 72 hours."
+      summary: List packages
+      operationId: ListPackages
+      tags:
+        - packages
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          description: Unix timestamp (in ms; exclusive) from which to fetch events.
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: false
+          description: Unix timestamp (in ms; inclusive) until which to fetch events.
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: The number of results to be returned per page
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: 'Select which page is returned, default/first page is 1.'
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of all packages matching the provided criteria
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 2
+                    packages:
+                      - id: 2579938
+                        vendor: org.apache.tomcat
+                        name: tomcat-catalina-ha
+                        version: 7.0.69
+                        build: unknown
+                        created_at: 1497046105495
+                      - id: 2579939
+                        vendor: org.apache.tomcat
+                        name: tomcat-juli
+                        version: 7.0.69
+                        build: unknown
+                        created_at: 1497046105495
+            application/json:
+              schema:
+                title: Package list
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  packages:
+                    description: A list of packages
+                    type: array
+                    items:
+                      title: Package Details
+                      type: object
+                      properties:
+                        id:
+                          description: The ID of the package
+                          type: integer
+                        vendor:
+                          description: The vendor providing the package
+                          type: string
+                        name:
+                          description: The name of the package
+                          type: string
+                        version:
+                          description: The version of the package
+                          type: string
+                        build:
+                          description: The build ID of the package
+                          type: string
+                        created_at:
+                          description: Unix timestamp (in ms) when the package was first seen
+                          type: integer
+                      required:
+                        - id
+                        - vendor
+                        - name
+                        - version
+                        - build
+                        - created_at
+                required:
+                  - total
+                  - packages
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/packages/vulnerable_packages':
+    get:
+      description: "Fetches details for all vulnerable packages for the given app_id that were active in the given timeframe. If a 'from' and 'to' timestamp is not provided the timeframe is considered to be the past 72 hours."
+      summary: List vulnerable packages
+      operationId: ListVulnerablePackages
+      tags:
+        - packages
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          description: Unix timestamp (in ms; exclusive) from which to fetch events.
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: false
+          description: Unix timestamp (in ms; inclusive) until which to fetch events.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "A list of all vulnerable packages for the app matching the provided criteria. If there are no vulnerabilities, the endpoint returns an empty 'vulnerable_packages' list and 'total' as 0."
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 1
+                    vulnerable_packages:
+                      - name: tomcat-catalina-ha
+                        vendor: org.apache.tomcat
+                        version: 7.0.69
+                        vulnerabilities:
+                          - cvss: 4.3
+                            description: The Realm implementations in Apache Tomcat did not process the supplied password if the supplied user name did not exist.
+                            matchedCPE: 'cpe:/a:apache:tomcat:7.0.69'
+                            cve: 2016-0762
+                            cwe: 'CWE-264 Permissions, Privileges, and Access Controls'
+                            references:
+                              - name: '[announce] 20161027 [SECURITY] CVE-2016-0762 Apache Tomcat Realm Timing Attack'
+                                source: MLIST
+                                url: 'https://lists.apache.org/thread.html/1872f96bad43647832bdd84a408794cd06d9cbb557af63085ca10009@%3Cannounce.tomcat.apache.org%3E'
+                              - name: 'RHSA-2017:0455'
+                                source: REDHAT
+                                url: 'https://access.redhat.com/errata/RHSA-2017:0455'
+                            title: 'CWE-264 Permissions, Privileges, and Access Controls'
+                            id: CVE-2016-0762
+                            severity: medium
+                            url: 'http://rhn.redhat.com/errata/RHSA-2017-0457.html'
+            application/json:
+              schema:
+                title: Vulnerable Package list
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  vulnerable_packages:
+                    description: A list of vulnerable packages and the associated vulnerabilities
+                    type: array
+                    items:
+                      title: Vulnerable Package Details
+                      type: object
+                      properties:
+                        name:
+                          description: The name of the package
+                          type: string
+                        vendor:
+                          description: The vendor providing the package
+                          type: string
+                        version:
+                          description: The version of the package
+                          type: string
+                        vulnerabilities:
+                          description: Details of vulnerabilities associated with the package
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              title:
+                                type: string
+                              id:
+                                type: string
+                              severity:
+                                type: string
+                              description:
+                                type: string
+                              cvss:
+                                type: number
+                              cwe:
+                                type: string
+                              cve:
+                                type: string
+                              matchedCPE:
+                                type: string
+                              references:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                    source:
+                                      type: string
+                                    url:
+                                      type: string
+                      required:
+                        - name
+                        - vendor
+                        - version
+                        - vulnerabilities
+                required:
+                  - total
+                  - vulnerable_packages
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/sources/{source}/table':
+    get:
+      description: Fetches events of the provided type.
+      summary: Get events
+      operationId: GetEvents
+      tags:
+        - events
+      parameters:
+        - name: source
+          in: path
+          required: true
+          description: The type of events to fetch
+          schema:
+            type: string
+            enum:
+              - appfirewall
+              - inline
+              - login
+              - csp
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: timerange
+          in: query
+          required: false
+          description: Relative time from now (ignored if `from` is provided).
+          schema:
+            type: string
+            enum:
+              - 1h
+              - 3h
+              - 6h
+              - 12h
+              - 24h
+              - 72h
+              - 1w
+              - 2w
+              - 1mo
+        - name: filter
+          in: query
+          required: false
+          description: |
+            Filters out events based on a predicate.
+            The syntax is `filter=field:operator:value`, where:
+            `field` is a field present in the data
+            `operator` is one of `include` (equals), `exclude` (not equals), `gt` (greater than), and `lt` (less than)
+            `value` is the value to apply the operator to
+
+            Examples:
+            Only return events where `id` is `"foo"`:
+            `filter=id:include:foo`
+            Don't include events where `id` is `"bar"`:
+            `filter=id:exclude:bar`
+          schema:
+            type: string
+        - name: group_by
+          in: query
+          required: false
+          description: |
+            Field to group events by.
+
+            Examples:
+            Group by `city`:
+            `group_by=city`
+
+            Group by `city` and `user_id`:
+            `group_by=city&group_by=user_id`
+          schema:
+            type: string
+        - name: sort_by
+          in: query
+          required: false
+          description: Field to sort events by
+          schema:
+            type: string
+        - name: order
+          in: query
+          required: false
+          description: Order to sort events in
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: column
+          in: query
+          required: false
+          description: |
+            Selects which fields to include in the results.
+
+            Examples:
+            Only include the `id` field:
+            `column=id`
+
+            Only include the `id`, `city`, and `ip` fields:
+            `column=id&column=city&column=ip`
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of matching events.
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    total: 1
+                    table:
+                      - method: Post
+                        city: Bogotá
+                        full_uri: null
+                        ip: 192.123.123.123
+                        parameter: null
+                        location:
+                          location:
+                            latitude: 4.6492
+                            longitude: -74.0628
+                            city: Bogotá
+                            country: Colombia
+                            iso-code: CO
+                          is-tor: false
+                          asn:
+                            number: AS3816
+                            name: TELECOMUNICACIONES S.A. ESP
+                        session_id: f6e075f9f334a28ab5da8a58bec253450fec0cd212bb7863fd1f72b4f0c6ace8
+                        path: '/some/path/*'
+                        detection_point: s5xx
+                        payload: null
+                        country: Colombia
+                        stripped_uri: 'https://my-side.corp/some/path/*'
+                        user_id: null
+                        to: null
+                        pattern_id: null
+                        route_id: 157347626
+                        transaction_id: null
+                        id: 40577ef1-8314-11e7-9d63-8fc126905e2f
+                        from: null
+                        app_id: DemoB-QX7E7
+                        route: 'post /some/path/*'
+                        time: 1502950866015
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/configs/latest':
+    get:
+      description: Fetches the currently active app config.
+      summary: Get the active config
+      operationId: GetLatestConfig
+      tags:
+        - configs
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The latest config data
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/configs/{config_id}':
+    get:
+      description: Fetches the config with the given ID.
+      summary: Get config
+      operationId: GetConfig
+      tags:
+        - configs
+      parameters:
+        - name: config_id
+          in: path
+          required: true
+          description: The config ID
+          schema:
+            type: integer
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The config data for the given config ID
+        '404':
+          description: No config with the provided ID was found
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/configs/blockedips/blacklistedips':
+    post:
+      description: Add ips to the existing blacklisted ips list inside the blocked ips config
+      summary: Add ips to blacklisted list
+      operationId: PostBlacklistedIp
+      tags:
+        - configs
+        - blacklist
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/PostBlacklistedIpBody'
+      responses:
+        '200':
+          description: The new config id
+        '422':
+          description: Validation failure
+          content:
+            message:
+              examples:
+                response:
+                  value: 'Config validation failed. 1 invalid IP(s) in blockedips: myIp%*#'
+            errors:
+              examples:
+                response:
+                  value:
+                    - code: invalid
+                      field: ip
+      security:
+        - APIKeyHeader: []
+    delete:
+      description: Remove ips from the existing blacklisted ips list inside the blocked ips config
+      summary: Remove ips from blacklisted list
+      operationId: DeleteBlacklistedIp
+      tags:
+        - configs
+        - blacklist
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/PostBlacklistedIpBody'
+      responses:
+        '200':
+          description: The new config id
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/configs':
+    get:
+      description: Fetches details for all configs (matching the provided criteria).
+      summary: List configs
+      operationId: ListConfigs
+      tags:
+        - configs
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          description: Unix timestamp (in ms; exclusive) from which to fetch events
+          schema:
+            type: integer
+        - name: to
+          in: query
+          required: false
+          description: Unix timestamp (in ms; inclusive) until which to fetch events
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          description: The number of results to be returned per page
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: Select which page is returned (defaults to 1)
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of configs matching the provided criteria
+          content:
+            application/json:
+              schema:
+                title: Config list
+                type: object
+                properties:
+                  total:
+                    description: The number of items returned
+                    type: integer
+                  configs:
+                    description: A list of configs
+                    type: array
+                    items:
+                      type: object
+                required:
+                  - total
+                  - configs
+      security:
+        - APIKeyHeader: []
+    post:
+      description: 'Rewrites the app config, either in part or in full.'
+      summary: Post config changes
+      operationId: PostConfig
+      tags:
+        - configs
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+        description: A config data object
+        required: true
+      responses:
+        '200':
+          description: ''
+      security:
+        - APIKeyHeader: []
+  '/apps/{app_id}/configs/revert/{id}':
+    post:
+      description: Revert configuration to use configuration from previous iteration
+      summary: Revert config changes
+      operationId: RevertConfig
+      tags:
+        - configs
+      parameters:
+        - name: app_id
+          in: path
+          required: true
+          description: The app ID
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: The id of the configuration to use
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Revert configuration successful
+        '400':
+          description: Syntactically invalid configuration ID
+        '404':
+          description: Unknown app_id or configuration ID
+      security:
+        - APIKeyHeader: []
+  /ipgroups:
+    get:
+      description: Fetches details of all the IP groups
+      summary: List IP Groups
+      operationId: GetIPGroups
+      tags:
+        - ipgroups
+      responses:
+        '200':
+          description: Details of all IP groups
+          content:
+            '1':
+              examples:
+                response:
+                  value:
+                    groups:
+                      - name: newipgroup
+                        items:
+                          - type: ip
+                            value: 1.3.5.6
+                          - type: cidr
+                            value: 1.3.5.7/20
+                        note:
+                          note: IP group description
+                          userId: ab000538-0000-aaaa-ab12-000000aaaaaa
+                      - name: MyList
+                        items:
+                          - type: ip
+                            value: 127.0.0.1
+                    version: 1
+            application/json:
+              schema:
+                title: IP Groups List with details
+                type: object
+                properties:
+                  groups:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        items:
+                          title: IP Group Details
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                  - ip
+                                  - cidr
+                              value:
+                                type: string
+                        note:
+                          type: object
+                          properties:
+                            note:
+                              type: string
+                            userId:
+                              type: string
+                  version:
+                    type: number
+      security:
+        - APIKeyHeader: []
+    post:
+      description: Add a new IP group
+      summary: Add IP Group
+      operationId: PostIPGroup
+      tags:
+        - ipgroups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                items:
+                  title: IP Group Details
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - ip
+                          - cidr
+                      value:
+                        type: string
+        required: true
+      responses:
+        '200':
+          description: A unique id for the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+        '400':
+          description: Invalid body or IP group with the same name already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  '/ipgroups/{name}':
+    get:
+      description: Fetches the items in the IP group with the given name
+      summary: Get IP Group items
+      operationId: GetIPGroupItems
+      tags:
+        - ipgroups
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The IP group name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of items that are part of the IP group
+          content:
+            application/json:
+              schema:
+                title: IP Group Details
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - ip
+                        - cidr
+                    value:
+                      type: string
+        '404':
+          description: The IP group could not be found
+          content:
+            message:
+              examples:
+                response:
+                  value: IPGroup could not be found
+            errors:
+              examples:
+                response:
+                  value:
+                    - code: missing
+                      field: name
+                      value: FakeGroupName
+    delete:
+      description: Delete the IP group with the given name
+      summary: Delete IP Group
+      operationId: DeleteIPGroup
+      tags:
+        - ipgroups
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The IP group name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A unique id for the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+        '404':
+          description: The IP group could not be found
+          content:
+            message:
+              examples:
+                response:
+                  value: Resource not be found
+            errors:
+              examples:
+                response:
+                  value:
+                    - code: missing
+                      field: name
+                      value: FakeGroupName
+  '/ipgroups/{name}/items':
+    post:
+      description: Replace items list for an IP group
+      summary: Replace IP Group item list
+      operationId: ReplaceIPGroupItems
+      tags:
+        - ipgroups
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The IP group name
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  title: IP Group Details
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - ip
+                          - cidr
+                      value:
+                        type: string
+        required: true
+      responses:
+        '200':
+          description: A unique id for the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+        '400':
+          description: Invalid request. Check that the body is formatted correctly
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The IP group could not be found
+          content:
+            message:
+              examples:
+                response:
+                  value: Resource not be found
+            errors:
+              examples:
+                response:
+                  value:
+                    - code: missing
+                      field: name
+                      value: FakeGroupName
+    put:
+      description: Add an item to IP group
+      summary: Add an item to IP group
+      operationId: PutItemInIPGroup
+      tags:
+        - ipgroups
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The IP group name
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/PutItemInIPGroupBody'
+      responses:
+        '200':
+          description: A unique id for the successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+        '400':
+          description: Invalid request. Check that the body is formatted correctly
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The IP group could not be found
+          content:
+            message:
+              examples:
+                response:
+                  value: Resource not be found
+            errors:
+              examples:
+                response:
+                  value:
+                    - code: missing
+                      field: name
+                      value: FakeGroupName
+    delete:
+      description: Delete an item from IP group
+      summary: Delete an item from IP group
+      operationId: DeleteItemFromIPGroup
+      tags:
+        - ipgroups
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The IP group name
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/PutItemInIPGroupBody'
+      responses:
+        '200':
+          description: A unique id for the successful operation or a message that the item doesnt exist in the IP group
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      message:
+                        type: string
+        '400':
+          description: Invalid request. Check that the body is formatted correctly
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The IP group could not be found
+          content:
+            message:
+              examples:
+                response:
+                  value: Resource not be found
+            errors:
+              examples:
+                response:
+                  value:
+                    - code: missing
+                      field: name
+                      value: FakeGroupName
+servers:
+  - url: 'https://us.api.insight.rapid7.com/tcell/api/v1'
+components:
+  requestBodies:
+    AddTagsBody:
+      content:
+        application/json:
+          schema:
+            title: Modify tags for application
+            type: object
+            properties:
+              tags:
+                description: 'List of strings, containing the tags to be added or removed from the application'
+                type: array
+                items:
+                  type: string
+            required:
+              - tags
+      required: true
+    PostBlacklistedIpBody:
+      content:
+        application/json:
+          schema:
+            title: Modify blacklisted IPs for application
+            type: object
+            properties:
+              ips:
+                description: 'List of strings, containing the IP addresses to be added or removed from the blacklist for the application'
+                type: array
+                items:
+                  type: string
+                  format: ipv4
+            required:
+              - ips
+      required: true
+    PutItemInIPGroupBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - ip
+                  - cidr
+              value:
+                type: string
+      required: true
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      name: X-API-Key
+      in: header
+  schemas:
+    CreateNewKeyBody:
+      title: Create new key body
+      type: object
+      properties:
+        name:
+          description: Name of the API key
+          type: string
+        scope:
+          description: 'The scope of the API key which may be one of "Server Agent", "Web Server Agent", "JSAgent", "User Read-Only"'
+          type: string
+      required:
+        - name
+        - scope
+    ApiKey:
+      title: Create new key body
+      type: object
+      properties:
+        name:
+          description: Name of the API key
+          type: string
+        token:
+          description: The API Key token
+          type: string
+        scope:
+          description: 'The scope of the API key (1 is for Server Agent, 2 is for JS Agent)'
+          type: integer
+          enum:
+            - 1
+            - 2
+        createdAt:
+          description: UNIX timestamp (in ms) when the key was created
+          type: integer
+        lastUsedAt:
+          description: UNIX timestamp (in ms) when the key was last used
+          type: integer
+      required:
+        - name
+        - token
+        - scope
+        - createdAt
+    ApiKeyList:
+      title: API key list
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        keys:
+          description: A list of API keys
+          type: array
+          items:
+            title: Create new key body
+            type: object
+            properties:
+              name:
+                description: Name of the API key
+                type: string
+              token:
+                description: The API Key token
+                type: string
+              scope:
+                description: 'The scope of the API key (1 is for Server Agent, 2 is for JS Agent)'
+                type: integer
+                enum:
+                  - 1
+                  - 2
+              createdAt:
+                description: UNIX timestamp (in ms) when the key was created
+                type: integer
+              lastUsedAt:
+                description: UNIX timestamp (in ms) when the key was last used
+                type: integer
+            required:
+              - name
+              - token
+              - scope
+              - createdAt
+      required:
+        - total
+        - keys
+    CreateNewAppBody:
+      title: Create new application body
+      type: object
+      properties:
+        app_display_name:
+          description: The display name of your new application (An app id will be derived from this name)
+          type: string
+      required:
+        - app_display_name
+    TagsListResponse:
+      title: Tags response
+      type: object
+      properties:
+        tags:
+          description: 'List of strings, presenting the tags for the application'
+          type: array
+          items:
+            type: string
+    ModifyTagsInAppBody:
+      title: Modify tags for application
+      type: object
+      properties:
+        tags:
+          description: 'List of strings, containing the tags to be added or removed from the application'
+          type: array
+          items:
+            type: string
+      required:
+        - tags
+    ModifyBlacklistedIps:
+      title: Modify blacklisted IPs for application
+      type: object
+      properties:
+        ips:
+          description: 'List of strings, containing the IP addresses to be added or removed from the blacklist for the application'
+          type: array
+          items:
+            type: string
+            format: ipv4
+      required:
+        - ips
+    AppDetails:
+      title: App Details
+      type: object
+      properties:
+        id:
+          description: The app ID
+          type: string
+        name:
+          description: The name of the app
+          type: string
+      required:
+        - id
+        - name
+    RouteDetails:
+      title: Route Details
+      type: object
+      properties:
+        id:
+          description: The ID of the route
+          type: integer
+        method:
+          description: 'The HTTP method (GET, POST, ...) for the route'
+          type: string
+        pattern:
+          description: The path pattern for the route
+          type: string
+        controller:
+          description: The name of the controller associated with the route (when applicable)
+          type: string
+      required:
+        - id
+        - method
+        - pattern
+    IpGroupDetails:
+      title: IP Group Details
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - ip
+              - cidr
+          value:
+            type: string
+    IpGroupsList:
+      title: IP Groups List with details
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              items:
+                title: IP Group Details
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - ip
+                        - cidr
+                    value:
+                      type: string
+              note:
+                type: object
+                properties:
+                  note:
+                    type: string
+                  userId:
+                    type: string
+        version:
+          type: number
+    PackageDetails:
+      title: Package Details
+      type: object
+      properties:
+        id:
+          description: The ID of the package
+          type: integer
+        vendor:
+          description: The vendor providing the package
+          type: string
+        name:
+          description: The name of the package
+          type: string
+        version:
+          description: The version of the package
+          type: string
+        build:
+          description: The build ID of the package
+          type: string
+        created_at:
+          description: Unix timestamp (in ms) when the package was first seen
+          type: integer
+      required:
+        - id
+        - vendor
+        - name
+        - version
+        - build
+        - created_at
+    VulnerablePackageDetails:
+      title: Vulnerable Package Details
+      type: object
+      properties:
+        name:
+          description: The name of the package
+          type: string
+        vendor:
+          description: The vendor providing the package
+          type: string
+        version:
+          description: The version of the package
+          type: string
+        vulnerabilities:
+          description: Details of vulnerabilities associated with the package
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              id:
+                type: string
+              severity:
+                type: string
+              description:
+                type: string
+              cvss:
+                type: number
+              cwe:
+                type: string
+              cve:
+                type: string
+              matchedCPE:
+                type: string
+              references:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    source:
+                      type: string
+                    url:
+                      type: string
+      required:
+        - name
+        - vendor
+        - version
+        - vulnerabilities
+    AgentDetails:
+      title: agent
+      type: object
+      properties:
+        id:
+          description: The agent ID
+          type: string
+        type:
+          description: 'The agent type (`JVMagent`, `ruby`, etc)'
+          type: string
+        version:
+          description: The version of the agent
+          type: string
+        from:
+          description: The Unix timestamp (in ms) when the agent was first seen
+          type: integer
+        to:
+          description: The Unix timestamp (in ms) when the agent was last seen
+          type: integer
+        last_process_id:
+          description: The most recent process ID associated with the agent
+          type: string
+        active:
+          description: Whether or not the agent is currently active
+          type: boolean
+      required:
+        - id
+        - type
+        - version
+        - from
+        - to
+        - last_process_id
+        - active
+    InlineScriptDetails:
+      title: inline_script
+      example:
+        id: ScriptId
+      type: object
+      properties:
+        id:
+          description: ''
+          type: string
+      required:
+        - id
+    NewApp:
+      title: New application
+      type: object
+      properties:
+        app_id:
+          description: The ID of the newly created Application
+          type: string
+      required:
+        - app_id
+    AppList:
+      title: App list
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        apps:
+          description: A list of apps
+          type: array
+          items:
+            title: App Details
+            type: object
+            properties:
+              id:
+                description: The app ID
+                type: string
+              name:
+                description: The name of the app
+                type: string
+            required:
+              - id
+              - name
+      required:
+        - total
+        - apps
+    AgentList:
+      title: Apps Agents response
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        agents:
+          description: A list of agents
+          type: array
+          items:
+            title: agent
+            type: object
+            properties:
+              id:
+                description: The agent ID
+                type: string
+              type:
+                description: 'The agent type (`JVMagent`, `ruby`, etc)'
+                type: string
+              version:
+                description: The version of the agent
+                type: string
+              from:
+                description: The Unix timestamp (in ms) when the agent was first seen
+                type: integer
+              to:
+                description: The Unix timestamp (in ms) when the agent was last seen
+                type: integer
+              last_process_id:
+                description: The most recent process ID associated with the agent
+                type: string
+              active:
+                description: Whether or not the agent is currently active
+                type: boolean
+            required:
+              - id
+              - type
+              - version
+              - from
+              - to
+              - last_process_id
+              - active
+      required:
+        - total
+        - agents
+    RouteList:
+      title: Apps Routes response
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        routes:
+          description: A list of routes
+          type: array
+          items:
+            title: Route Details
+            type: object
+            properties:
+              id:
+                description: The ID of the route
+                type: integer
+              method:
+                description: 'The HTTP method (GET, POST, ...) for the route'
+                type: string
+              pattern:
+                description: The path pattern for the route
+                type: string
+              controller:
+                description: The name of the controller associated with the route (when applicable)
+                type: string
+            required:
+              - id
+              - method
+              - pattern
+      required:
+        - total
+        - routes
+    InlineScriptList:
+      title: Apps Inline Scripts response
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        inline_scripts:
+          description: A list of inline scripts
+          type: array
+          items:
+            title: inline_script
+            example:
+              id: ScriptId
+            type: object
+            properties:
+              id:
+                description: ''
+                type: string
+            required:
+              - id
+      required:
+        - total
+        - inline_scripts
+    PackageList:
+      title: Package list
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        packages:
+          description: A list of packages
+          type: array
+          items:
+            title: Package Details
+            type: object
+            properties:
+              id:
+                description: The ID of the package
+                type: integer
+              vendor:
+                description: The vendor providing the package
+                type: string
+              name:
+                description: The name of the package
+                type: string
+              version:
+                description: The version of the package
+                type: string
+              build:
+                description: The build ID of the package
+                type: string
+              created_at:
+                description: Unix timestamp (in ms) when the package was first seen
+                type: integer
+            required:
+              - id
+              - vendor
+              - name
+              - version
+              - build
+              - created_at
+      required:
+        - total
+        - packages
+    VulnerablePackageList:
+      title: Vulnerable Package list
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        vulnerable_packages:
+          description: A list of vulnerable packages and the associated vulnerabilities
+          type: array
+          items:
+            title: Vulnerable Package Details
+            type: object
+            properties:
+              name:
+                description: The name of the package
+                type: string
+              vendor:
+                description: The vendor providing the package
+                type: string
+              version:
+                description: The version of the package
+                type: string
+              vulnerabilities:
+                description: Details of vulnerabilities associated with the package
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    id:
+                      type: string
+                    severity:
+                      type: string
+                    description:
+                      type: string
+                    cvss:
+                      type: number
+                    cwe:
+                      type: string
+                    cve:
+                      type: string
+                    matchedCPE:
+                      type: string
+                    references:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          source:
+                            type: string
+                          url:
+                            type: string
+            required:
+              - name
+              - vendor
+              - version
+              - vulnerabilities
+      required:
+        - total
+        - vulnerable_packages
+    EventList:
+      title: Event list
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        events:
+          description: A list of events
+          type: array
+          items:
+            type: object
+      required:
+        - total
+        - events
+    ConfigList:
+      title: Config list
+      type: object
+      properties:
+        total:
+          description: The number of items returned
+          type: integer
+        configs:
+          description: A list of configs
+          type: array
+          items:
+            type: object
+      required:
+        - total
+        - configs
+x-samples-enabled: true
+x-samples-languages:
+  - curl
+  - node
+  - ruby
+  - javascript
+  - python
+security:
+  - APIKeyHeader: []
