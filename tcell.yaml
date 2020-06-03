@@ -25,214 +25,11 @@ info:
 x-proxy-enabled: false
 x-explorer-enabled: true
 paths:
-  /keys:
-    get:
-      description: 'Fetches a list of all API keys for the customer environment, including agent keys and api keys for programmatic API acccess'
-      summary: List of API keys
-      operationId: ListKeys
-      tags:
-        - keys
-        - api keys
-      responses:
-        '200':
-          description: 'List of API Keys.  The scopes list integers indicate the type of key, where 1 is a ServerAgent key, 2 is a JS Agent key, 101 is a Read-Only API key, and 102 is a Full Access API key.'
-          content:
-            application/json:
-              schema:
-                title: API key list
-                type: object
-                properties:
-                  total:
-                    description: The number of items returned
-                    type: integer
-                  keys:
-                    description: A list of API keys
-                    type: array
-                    items:
-                      title: Create new key body
-                      type: object
-                      properties:
-                        name:
-                          description: Name of the API key
-                          type: string
-                        token:
-                          description: The API Key token
-                          type: string
-                        scope:
-                          description: 'The scope of the API key (1 is for Server Agent, 2 is for JS Agent)'
-                          type: integer
-                          enum:
-                            - 1
-                            - 2
-                        createdAt:
-                          description: UNIX timestamp (in ms) when the key was created
-                          type: integer
-                        lastUsedAt:
-                          description: UNIX timestamp (in ms) when the key was last used
-                          type: integer
-                      required:
-                        - name
-                        - token
-                        - scope
-                        - createdAt
-                required:
-                  - total
-                  - keys
-              examples:
-                List of API keys example:
-                  value:
-                    total: 2
-                    keys:
-                      - name: My ServerAgent Key
-                        token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
-                        scopes:
-                          - 1
-                        createdAt: 1507215994161
-                        lastUsedAt: 1507215994161
-                      - name: My JS Agent Key
-                        token: AQHRBAFw5bpAq4hFfJWYv2U8tWSehkljUu7KRw-DqGz4oiLAwQIE7BgCttph9ytqDRQ49ea
-                        scopes:
-                          - 2
-                        createdAt: 1510572886742
-                        lastUsedAt: 1510739815690
-      security:
-        - APIKeyHeader: []
-    post:
-      description: Create an API or agent key
-      summary: Create API key
-      operationId: CreateKey
-      tags:
-        - keys
-        - create
-      requestBody:
-        content:
-          application/json:
-            schema:
-              title: Create new key body
-              type: object
-              properties:
-                name:
-                  description: Name of the API key
-                  type: string
-                scope:
-                  description: 'The scope of the API key which may be one of "Server Agent", "Web Server Agent", "JSAgent", "User Read-Only"'
-                  type: string
-              required:
-                - name
-                - scope
-        required: true
-      responses:
-        '200':
-          description: New API key
-          content:
-            application/json:
-              schema:
-                title: Create new key body
-                type: object
-                properties:
-                  name:
-                    description: Name of the API key
-                    type: string
-                  token:
-                    description: The API Key token
-                    type: string
-                  scope:
-                    description: 'The scope of the API key (1 is for Server Agent, 2 is for JS Agent)'
-                    type: integer
-                    enum:
-                      - 1
-                      - 2
-                  createdAt:
-                    description: UNIX timestamp (in ms) when the key was created
-                    type: integer
-                  lastUsedAt:
-                    description: UNIX timestamp (in ms) when the key was last used
-                    type: integer
-                required:
-                  - name
-                  - token
-                  - scope
-                  - createdAt
-              examples:
-                Create API key example:
-                  value:
-                    name: My ServerAgent Key
-                    token: AQBABAFA1RksYIRKMLRb0MnizHYxhkljcu7HRw-DsTz1piLEwbZS1HuFYmApR0HIkoOBfD1
-                    scopes:
-                      - 1
-                    createdAt: 1507215994161
-                    lastUsedAt: 1507215994161
-      security:
-        - APIKeyHeader: []
-  '/keys/{token}':
-    delete:
-      description: Delete an API or agent key
-      summary: Remove API Key
-      operationId: RemoveKey
-      tags:
-        - keys
-        - delete
-        - remove
-      parameters:
-        - name: token
-          in: path
-          required: true
-          description: The API Token that you want to delete ( the token field in the key list )
-          schema:
-            type: string
-      responses:
-        '200':
-          description: API Key was successfully removed
-      security:
-        - APIKeyHeader: []
-  '/apps/{app_id}':
-    get:
-      description: Fetches the display-name and App ID for the app with the given ID.
-      summary: Get app name and ID
-      operationId: GetAppDetails
-      tags:
-        - apps
-      parameters:
-        - name: app_id
-          in: path
-          required: true
-          description: The app ID
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A JSON object with the app ID and the user-friendly app display name
-          content:
-            application/json:
-              schema:
-                title: App Details
-                type: object
-                properties:
-                  id:
-                    description: The app ID
-                    type: string
-                  name:
-                    description: The name of the app
-                    type: string
-                required:
-                  - id
-                  - name
-              examples:
-                Get app name and ID example:
-                  value:
-                    id: MyApp-QX7E7
-                    name: My App
-        '404':
-          description: No app with the provided ID was found
-      security:
-        - APIKeyHeader: []
   /apps:
     get:
       description: Fetches app name and app ID for all apps in a customer environment.
       summary: List apps
       operationId: ListApps
-      tags:
-        - apps
       responses:
         '200':
           description: Details for all apps
@@ -276,13 +73,12 @@ paths:
       security:
         - APIKeyHeader: []
       parameters: []
+      tags:
+        - app
     post:
       description: Create an application
       summary: Create app
       operationId: CreateApp
-      tags:
-        - apps
-        - create
       requestBody:
         content:
           application/json:
@@ -321,6 +117,8 @@ paths:
                     app_id: MyApp-QX7E7
       security:
         - APIKeyHeader: []
+      tags:
+        - app
   '/apps/{app_id}/tags':
     get:
       description: Fetch the set of tags for a tCell app
@@ -333,8 +131,6 @@ paths:
           description: The app ID
           schema:
             type: string
-      tags:
-        - apps
       responses:
         '200':
           description: An array of tags for the chosen app
@@ -357,14 +153,12 @@ paths:
                       - web-api
       security:
         - APIKeyHeader: []
+      tags:
+        - app
     post:
       description: 'Assign a complete new set of tags to an app, removing any previously existing tags.'
       summary: Change tags
       operationId: AddTags
-      tags:
-        - app
-        - tags
-        - add
       parameters:
         - name: app_id
           in: path
@@ -382,14 +176,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddTagsBody'
+      tags:
+        - apps
     put:
       description: All the tags posted in the body will be added to the set of tags the app already has.
       summary: Add tags
       operationId: UpdateTags
-      tags:
-        - app
-        - tags
-        - update
       parameters:
         - name: app_id
           in: path
@@ -413,14 +205,12 @@ paths:
           description: Successfully updated tags
       security:
         - APIKeyHeader: []
+      tags:
+        - apps
     delete:
       description: Remove the tags provided in the body from the application
       summary: Remove tags
       operationId: RemoveTags
-      tags:
-        - app
-        - tags
-        - remove
       parameters:
         - name: app_id
           in: path
@@ -444,13 +234,13 @@ paths:
           description: Successfully removed tags
       security:
         - APIKeyHeader: []
+      tags:
+        - apps
   '/apps/{app_id}/agents/{agent_id}':
     get:
       description: Fetches details for the agent with the given ID.
       summary: Get agent details
       operationId: GetAgentDetails
-      tags:
-        - agents
       parameters:
         - name: agent_id
           in: path
@@ -516,13 +306,13 @@ paths:
           description: No agent with the provided ID was found
       security:
         - APIKeyHeader: []
+      tags:
+        - agents
   '/apps/{app_id}/agents':
     get:
       description: Fetches details for all seen agents (optionally matching the provided criteria).
       summary: List agents
       operationId: ListAgents
-      tags:
-        - agents
       parameters:
         - name: app_id
           in: path
@@ -625,13 +415,13 @@ paths:
                   - agents
       security:
         - APIKeyHeader: []
+      tags:
+        - agents
   '/apps/{app_id}/routes/{route_id}':
     get:
       description: Fetches details for the route with the given ID.
       summary: Get route details
       operationId: GetRouteDetails
-      tags:
-        - routes
       parameters:
         - name: route_id
           in: path
@@ -682,13 +472,13 @@ paths:
           description: No route with the provided ID was found
       security:
         - APIKeyHeader: []
+      tags:
+        - routes
   '/apps/{app_id}/routes':
     get:
       description: Fetches details for all seen routes (matching the provided criteria).
       summary: List routes
       operationId: ListRoutes
-      tags:
-        - routes
       parameters:
         - name: app_id
           in: path
@@ -774,13 +564,13 @@ paths:
                   - routes
       security:
         - APIKeyHeader: []
+      tags:
+        - routes
   '/apps/{app_id}/inline_scripts/{inline_script_id}':
     get:
       description: Fetches details for the inline script with the given ID.
       summary: Get inline script details
       operationId: GetInlineScriptDetails
-      tags:
-        - inline scripts
       parameters:
         - name: inline_script_id
           in: path
@@ -823,13 +613,13 @@ paths:
           description: No inline script with the provided ID was found
       security:
         - APIKeyHeader: []
+      tags:
+        - inline scripts
   '/apps/{app_id}/inline_scripts':
     get:
       description: Fetches details for all seen inline scripts (matching the provided criteria).
       summary: List inline scripts
       operationId: ListInlineScripts
-      tags:
-        - inline scripts
       parameters:
         - name: app_id
           in: path
@@ -906,13 +696,13 @@ paths:
                   - inline_scripts
       security:
         - APIKeyHeader: []
+      tags:
+        - inline scripts
   '/apps/{app_id}/packages/{package_id}':
     get:
       description: Fetches details for the package with the given ID.
       summary: Get package details
       operationId: GetPackageDetails
-      tags:
-        - packages
       parameters:
         - name: package_id
           in: path
@@ -973,13 +763,13 @@ paths:
           description: No package with the provided ID was found
       security:
         - APIKeyHeader: []
+      tags:
+        - packages
   '/apps/{app_id}/packages':
     get:
       description: "Fetches details for all seen packages (matching the provided criteria). If a 'from' and 'to' timestamp is not provided the timeframe is considered to be the past 72 hours."
       summary: List packages
       operationId: ListPackages
-      tags:
-        - packages
       parameters:
         - name: app_id
           in: path
@@ -1077,13 +867,13 @@ paths:
                         created_at: 1497046105495
       security:
         - APIKeyHeader: []
+      tags:
+        - packages
   '/apps/{app_id}/packages/vulnerable_packages':
     get:
       description: "Fetches details for all vulnerable packages for the given app_id that were active in the given timeframe. If a 'from' and 'to' timestamp is not provided the timeframe is considered to be the past 72 hours."
       summary: List vulnerable packages
       operationId: ListVulnerablePackages
-      tags:
-        - packages
       parameters:
         - name: app_id
           in: path
@@ -1199,13 +989,13 @@ paths:
                             url: 'http://rhn.redhat.com/errata/RHSA-2017-0457.html'
       security:
         - APIKeyHeader: []
+      tags:
+        - packages
   '/apps/{app_id}/sources/{source}/table':
     get:
       description: Fetches events of the provided type.
       summary: Get events
       operationId: GetEvents
-      tags:
-        - events
       parameters:
         - name: source
           in: path
@@ -1346,14 +1136,14 @@ paths:
                 $ref: '#/components/schemas/Get-Events-Reponse'
       security:
         - APIKeyHeader: []
+      tags:
+        - events
     parameters: []
   '/apps/{app_id}/configs/latest':
     get:
       description: Fetches the currently active app config.
       summary: Get the active config
       operationId: GetLatestConfig
-      tags:
-        - configs
       parameters:
         - name: app_id
           in: path
@@ -1366,13 +1156,13 @@ paths:
           description: The latest config data
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
   '/apps/{app_id}/configs/{config_id}':
     get:
       description: Fetches the config with the given ID.
       summary: Get config
       operationId: GetConfig
-      tags:
-        - configs
       parameters:
         - name: config_id
           in: path
@@ -1393,14 +1183,13 @@ paths:
           description: No config with the provided ID was found
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
   '/apps/{app_id}/configs/blockedips/blacklistedips':
     post:
       description: Add ips to the existing blacklisted ips list inside the blocked ips config
       summary: Add ips to blacklisted list
       operationId: PostBlacklistedIp
-      tags:
-        - configs
-        - blacklist
       parameters:
         - name: app_id
           in: path
@@ -1437,13 +1226,12 @@ paths:
                       field: ip
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
     delete:
       description: Remove ips from the existing blacklisted ips list inside the blocked ips config
       summary: Remove ips from blacklisted list
       operationId: DeleteBlacklistedIp
-      tags:
-        - configs
-        - blacklist
       parameters:
         - name: app_id
           in: path
@@ -1469,13 +1257,13 @@ paths:
           headers: {}
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
   '/apps/{app_id}/configs':
     get:
       description: Fetches details for all configs (matching the provided criteria).
       summary: List configs
       operationId: ListConfigs
-      tags:
-        - configs
       parameters:
         - name: app_id
           in: path
@@ -1529,12 +1317,12 @@ paths:
                   - configs
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
     post:
       description: 'Rewrites the app config, either in part or in full.'
       summary: Post config changes
       operationId: PostConfig
-      tags:
-        - configs
       parameters:
         - name: app_id
           in: path
@@ -1553,13 +1341,13 @@ paths:
           description: ''
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
   '/apps/{app_id}/configs/revert/{id}':
     post:
       description: Revert configuration to use configuration from previous iteration
       summary: Revert config changes
       operationId: RevertConfig
-      tags:
-        - configs
       parameters:
         - name: app_id
           in: path
@@ -1582,13 +1370,13 @@ paths:
           description: Unknown app_id or configuration ID
       security:
         - APIKeyHeader: []
+      tags:
+        - configs
   /ipgroups:
     get:
       description: Fetches details of all the IP groups
       summary: List IP Groups
       operationId: GetIPGroups
-      tags:
-        - ipgroups
       responses:
         '200':
           description: Details of all IP groups
@@ -1647,12 +1435,12 @@ paths:
                     version: 1
       security:
         - APIKeyHeader: []
+      tags:
+        - ipgroups
     post:
       description: Add a new IP group
       summary: Add IP Group
       operationId: PostIPGroup
-      tags:
-        - ipgroups
       requestBody:
         content:
           application/json:
@@ -1697,13 +1485,13 @@ paths:
                 properties:
                   message:
                     type: string
+      tags:
+        - ipgroups
   '/ipgroups/{name}':
     get:
       description: Fetches the items in the IP group with the given name
       summary: Get IP Group items
       operationId: GetIPGroupItems
-      tags:
-        - ipgroups
       parameters:
         - name: name
           in: path
@@ -1739,12 +1527,12 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
     delete:
       description: Delete the IP group with the given name
       summary: Delete IP Group
       operationId: DeleteIPGroup
-      tags:
-        - ipgroups
       parameters:
         - name: name
           in: path
@@ -1775,13 +1563,13 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
   '/ipgroups/{name}/items':
     post:
       description: Replace items list for an IP group
       summary: Replace IP Group item list
       operationId: ReplaceIPGroupItems
-      tags:
-        - ipgroups
       parameters:
         - name: name
           in: path
@@ -1842,12 +1630,12 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
     put:
       description: Add an item to IP group
       summary: Add an item to IP group
       operationId: PutItemInIPGroup
-      tags:
-        - ipgroups
       parameters:
         - name: name
           in: path
@@ -1894,12 +1682,12 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
     delete:
       description: Delete an item from IP group
       summary: Delete an item from IP group
       operationId: DeleteItemFromIPGroup
-      tags:
-        - ipgroups
       parameters:
         - name: name
           in: path
@@ -1948,6 +1736,8 @@ paths:
                     - code: missing
                       field: name
                       value: FakeGroupName
+      tags:
+        - ipgroups
 servers:
   - url: 'https://us.api.insight.rapid7.com/tcell/api/v1'
 components:
@@ -2726,3 +2516,13 @@ x-samples-languages:
   - python
 security:
   - APIKeyHeader: []
+tags:
+  - name: apps
+  - name: app
+  - name: agents
+  - name: routes
+  - name: inline scripts
+  - name: packages
+  - name: events
+  - name: configs
+  - name: ipgroups
